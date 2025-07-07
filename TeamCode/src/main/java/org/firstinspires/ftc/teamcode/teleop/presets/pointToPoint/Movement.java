@@ -1,36 +1,57 @@
 package org.firstinspires.ftc.teamcode.teleop.presets.pointToPoint;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
 public class Movement {
 
-    public static void right(double length) {
-        System.out.printf("Move right by %.2f units.%n", length);
+    public static Action right(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .lineToX(pose.position.x + length)
+                .build();
     }
 
-    public static void rightDown(double length) {
-        System.out.printf("Move right-down by %.2f units.%n", length);
+    public static Action rightDown(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .splineTo(new Vector2d(pose.position.x + length, pose.position.y - length), pose.heading)
+                .build();
     }
 
-    public static void down(double length) {
-        System.out.printf("Move down by %.2f units.%n", length);
+    public static Action down(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .lineToY(pose.position.y - length)
+                .build();
     }
 
-    public static void leftDown(double length) {
-        System.out.printf("Move left-down by %.2f units.%n", length);
+    public static Action leftDown(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .splineTo(new Vector2d(pose.position.x - length, pose.position.y - length), pose.heading)
+                .build();
     }
 
-    public static void left(double length) {
-        System.out.printf("Move left by %.2f units.%n", length);
+    public static Action left(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .lineToX(pose.position.x - length)
+                .build();
     }
 
-    public static void leftUp(double length) {
-        System.out.printf("Move left-up by %.2f units.%n", length);
+    public static Action leftUp(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .splineTo(new Vector2d(pose.position.x - length, pose.position.y + length), pose.heading)
+                .build();
     }
 
-    public static void up(double length) {
-        System.out.printf("Move up by %.2f units.%n", length);
+    public static Action up(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .lineToY(pose.position.y + length)
+                .build();
     }
 
-    public static void rightUp(double length) {
-        System.out.printf("Move right-up by %.2f units.%n", length);
+    public static Action rightUp(double length, MecanumDrive drive, Pose2d pose) {
+        return drive.actionBuilder(pose)
+                .splineTo(new Vector2d(pose.position.x + length, pose.position.y + length), pose.heading)
+                .build();
     }
 }

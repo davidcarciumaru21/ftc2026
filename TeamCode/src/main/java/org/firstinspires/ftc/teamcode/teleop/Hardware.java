@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class Hardware {
+public final class Hardware {
     public DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 
     public void init(HardwareMap hardwareMap) {

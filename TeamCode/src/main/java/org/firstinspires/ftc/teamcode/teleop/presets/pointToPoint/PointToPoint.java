@@ -7,7 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 
 public class PointToPoint {
 
@@ -169,45 +172,64 @@ public class PointToPoint {
         return compressedPath;
     }
 
-    public static void execute_path(List<String> compressedPath) {
-        Map<String, Consumer<Double>> movementFunctions = new HashMap<>();
-        movementFunctions.put("right", Movement::right);
-        movementFunctions.put("right-down", Movement::rightDown);
-        movementFunctions.put("down", Movement::down);
-        movementFunctions.put("left-down", Movement::leftDown);
-        movementFunctions.put("left", Movement::left);
-        movementFunctions.put("left-up", Movement::leftUp);
-        movementFunctions.put("up", Movement::up);
-        movementFunctions.put("right-up", Movement::rightUp);
+    public static void execute_path(List<String> compressedPath, MecanumDrive drive, Pose2d startPose) {
+        Pose2d currentPose = startPose;
 
         for (String move : compressedPath) {
             int pIdx = move.indexOf('(');
-            String funcName = move.substring(0, pIdx);
-            double argument = Double.parseDouble(move.substring(pIdx + 1, move.length() - 1));
-
-            Consumer<Double> func = movementFunctions.get(funcName);
-            if (func != null) {
-                func.accept(argument);
-            } else {
-                System.out.println("Unknown movement function: " + funcName);
+            if (pIdx == -1 || !move.endsWith(")")) {
+                System.out.println("Invalid move format: " + move);
+                continue;
             }
-        }
-    }
+            String funcName = move.substring(0, pIdx).trim();
+            String argsStr = move.substring(pIdx + 1, move.length() - 1).trim();
 
-    public static void animate_path(Robot robot, List<Node> path, Table table) throws InterruptedException {
-        table.mark_unable_to_reach_nodes(robot);
-        table.apply_path_to_table(path);
-
-        for (Node node : path) {
+            double length;
             try {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } catch (Exception e) {
-                System.out.println("Could not clear console: " + e.getMessage());
+                length = Double.parseDouble(argsStr);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid length argument in move: " + move);
+                continue;
             }
-            table.generate_robot(robot, new int[]{node.y, node.x});
-            table.print_matrix();
-            Thread.sleep(50);
-            table.clear_robot();
+
+            Action action = null;
+
+            switch (funcName) {
+                case "right":
+                    action = Movement.right(length, drive, currentPose);
+                    break;
+                case "right-down":
+                    action = Movement.rightDown(length, drive, currentPose);
+                    break;
+                case "down":
+                    action = Movement.down(length, drive, currentPose);
+                    break;
+                case "left-down":
+                    action = Movement.leftDown(length, drive, currentPose);
+                    break;
+                case "left":
+                    action = Movement.left(length, drive, currentPose);
+                    break;
+                case "left-up":
+                    action = Movement.leftUp(length, drive, currentPose);
+                    break;
+                case "up":
+                    action = Movement.up(length, drive, currentPose);
+                    break;
+                case "right-up":
+                    action = Movement.rightUp(length, drive, currentPose);
+                    break;
+                default:
+                    System.out.println("Unknown movement function: " + funcName);
+                    continue;
+            }
+
+            if (action != null) {
+                drive.followAction(action);
+                currentPose = drive.getPoseEstimate();
+
+                System.out.println("Executed: " + funcName + "(" + length + ")");
+            }
         }
     }
 }

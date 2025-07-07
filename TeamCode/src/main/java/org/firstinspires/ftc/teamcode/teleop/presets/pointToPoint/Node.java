@@ -22,15 +22,4 @@ public class Node {
 
         this.coordonates = new int[] {this.x, this.y};
     }
-
-    @Override
-    public String toString() {
-        if (hasRobot) return "\u001B[35mR\u001B[0m";        // Purple (Magenta)
-        else if (isObstacle) return "\u001B[34mO\u001B[0m"; // Blue
-        else if (isUnableToReach) return "\u001B[33mU\u001B[0m"; // Yellow
-        else if (isStart) return "\u001B[32mS\u001B[0m";    // Green
-        else if (isEnd) return "\u001B[32mE\u001B[0m";      // Green (same as start)
-        else if (isPath) return "\u001B[31mP\u001B[0m";     // Red
-        else return "\u001B[37m0\u001B[0m";                 // White (default)
-    }
 }
