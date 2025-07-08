@@ -24,4 +24,12 @@ public class Utils {
         telemetry.addData("Version", version);
         telemetry.addLine("-----------------------------");
     }
+
+    public static void displayCoordonates(Telemetry telemetry, double x, double y, double tetha) {
+        telemetry.addData("x position", x);
+        telemetry.addLine("-----------------------------");
+        telemetry.addData("y position", y);
+        telemetry.addLine("-----------------------------");
+        telemetry.addData("heading in degrees", tetha);
+    }
 }

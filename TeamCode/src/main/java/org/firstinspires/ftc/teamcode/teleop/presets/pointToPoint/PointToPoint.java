@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode.teleop.presets.pointToPoint;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 
 public class PointToPoint {
 
@@ -225,9 +223,9 @@ public class PointToPoint {
             }
 
             if (action != null) {
-                drive.followAction(action);
-                currentPose = drive.getPoseEstimate();
-
+                Actions.runBlocking(action);
+                currentPose = drive.localizer.getPose();
+                double headingDegrees = Math.toDegrees(currentPose.heading.toDouble());
                 System.out.println("Executed: " + funcName + "(" + length + ")");
             }
         }

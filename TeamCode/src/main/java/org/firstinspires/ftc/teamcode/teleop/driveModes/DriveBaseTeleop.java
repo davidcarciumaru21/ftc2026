@@ -15,7 +15,7 @@ public class DriveBaseTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // Initialize hardware map
-        robot.init(hardwareMap);
+        robot.init(hardwareMap, 1);
 
         // Coefficients for joystick inputs
         double coefX = 1.1;
@@ -28,8 +28,8 @@ public class DriveBaseTeleop extends LinearOpMode {
 
             // Read joystick inputs and apply coefficients
             double x = gamepad1.left_stick_x * coefX;
-            double y = -gamepad1.left_stick_y * coefY;  // Usually y is inverted for forward
-            double rx = gamepad1.right_stick_x * coefRx;
+            double y = gamepad1.left_stick_y * coefY;
+            double rx = -gamepad1.right_stick_x * coefRx;
 
             // Normalize denominator to keep power in [-1,1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);

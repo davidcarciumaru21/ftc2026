@@ -7,14 +7,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public final class Hardware {
     public DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 
-    public void init(HardwareMap hardwareMap) {
+    public void init(HardwareMap hardwareMap, int mode) {
         frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeft");
         backLeftMotor = hardwareMap.get(DcMotor.class, "backLeft");
         frontRightMotor = hardwareMap.get(DcMotor.class, "frontRight");
         backRightMotor = hardwareMap.get(DcMotor.class, "backRight");
 
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        if (mode == 1) {
+            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
