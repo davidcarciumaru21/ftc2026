@@ -16,10 +16,10 @@ public class Table {
         this.columns = columns;
         this.mu = mu;
         this.table = new Node[rows][columns];
-        this.generate_table();
+        this.generateTable();
     }
 
-    private void generate_table() {
+    private void generateTable() {
         for (int y = 0; y < this.rows; y++) {
             for (int x = 0; x < this.columns; x++) {
                 table[y][x] = new Node(x, y);
@@ -27,7 +27,7 @@ public class Table {
         }
     }
 
-    public void print_matrix() {
+    public void printMatrix() {
         for (int y = 0; y < this.rows; y++){
             StringBuilder rowStr = new StringBuilder();
             for (int x = 0; x < this.columns; x++){
@@ -37,17 +37,17 @@ public class Table {
         }
     }
 
-    private boolean is_in_bounds(int y, int x) {
+    private boolean isInBounds(int y, int x) {
         return y >= 0 && y < rows && x >= 0 && x < columns;
     }
 
-    public void apply_path_to_table(List<Node> path){
+    public void applyPathToTable(List<Node> path){
         for (int i = 1; i < path.size() - 1; i++){
             path.get(i).isPath = true;
         }
     }
 
-    public void mark_unable_to_reach_nodes(Robot robot) {
+    public void markUnableToReachNodes(Robot robot) {
         int half_width = (int) Math.ceil(robot.width / 2.0);
         int half_height = (int) Math.ceil(robot.height / 2.0);
 
@@ -58,7 +58,7 @@ public class Table {
                         for (int dx = -half_width; dx <= half_width; dx++){
                             int newY = y + dy;
                             int newX = x + dx;
-                            if (this.is_in_bounds(newY, newX)){
+                            if (this.isInBounds(newY, newX)){
                                 Node neighbor = this.table[newY][newX];
                                 if (!neighbor.isObstacle) {
                                     neighbor.isUnableToReach = true;
@@ -71,7 +71,7 @@ public class Table {
         }
     }
 
-    public Node return_valid_node() {
+    public Node returnValidNode() {
         List<Node> validNodes = new ArrayList<Node>();
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
@@ -89,7 +89,7 @@ public class Table {
         return validNodes.get(random.nextInt(validNodes.size()));
     }
 
-    public void draw_border(Robot robot) {
+    public void drawBorder(Robot robot) {
         int half_width = (int) Math.ceil(robot.width / 2.0);
         int half_height = (int) Math.ceil(robot.height / 2.0);
 
@@ -108,7 +108,7 @@ public class Table {
         }
     }
 
-    public void clear_robot() {
+    public void clearRobot() {
         for (int y = 0; y < this.rows; y++) {
             for (int x = 0; x < this.columns; x++) {
                 if (this.table[y][x].hasRobot) {
@@ -118,7 +118,7 @@ public class Table {
         }
     }
 
-    public void generate_robot(Robot robot, int[] coordonates) {
+    public void generateRobot(Robot robot, int[] coordonates) {
         int centerY = coordonates[0];
         int centerX = coordonates[1];
         int halfWidth = (int) Math.ceil(robot.width / 2.0);
@@ -127,7 +127,7 @@ public class Table {
             for (int dx = -halfWidth; dx <= halfWidth; dx++) {
                 int newY = centerY + dy;
                 int newX = centerX + dx;
-                if (this.is_in_bounds(newY, newX)) {
+                if (this.isInBounds(newY, newX)) {
                     table[newY][newX].hasRobot = true;
                 }
             }

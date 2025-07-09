@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.teleop.presets.pointToPoint.Node;
 import org.firstinspires.ftc.teamcode.teleop.presets.pointToPoint.Table;
 import org.firstinspires.ftc.teamcode.teleop.presets.pointToPoint.Robot;
 import org.firstinspires.ftc.teamcode.teleop.presets.pointToPoint.PointToPoint;
-import org.firstinspires.ftc.teamcode.teleop.Hardware;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -19,102 +18,47 @@ import java.util.List;
 @TeleOp(name = "DriveBase-TeleOpPointToPoint", group = "Dev-Teleops")
 public class DriveBaseTeleopPointToPoint extends LinearOpMode {
 
-    private final Hardware robot = new Hardware();
-
-    // Robot size in grid units
-    private final Robot robotPreset = new Robot(35, 43);
-
-    private List<Node> path;
-
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry.addLine("Initializing hardware...");
-        telemetry.update();
 
-        robot.init(hardwareMap, 2);
-
-        Pose2d startPose = new Pose2d(0, 0, 0);
+        Robot robotPointToPoint = new Robot(35, 43);
+        int startX = (int)(Utils.cmToInches((double) robotPointToPoint.width / 2)), startY = (int)(Utils.cmToInches((double) robotPointToPoint.height) / 2);
+        int startHeading = 0; // in degrees
+        Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startHeading));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         MecanumDrive.DriveLocalizer driveLocalizer = drive.new DriveLocalizer(startPose);
+        Table tableObj = new Table(360, 360, 10);
+        tableObj.markUnableToReachNodes(robotPointToPoint);
+        tableObj.drawBorder(robotPointToPoint);
 
-        Table tableObj = new Table(280, 140, 10);
-
-        telemetry.addLine("Precomputing table data...");
-        telemetry.update();
-        tableObj.mark_unable_to_reach_nodes(robotPreset);
-        tableObj.draw_border(robotPreset);
-
-        telemetry.addLine("Ready - Press Play");
-        telemetry.update();
         waitForStart();
 
-        double coefX = 1.1, coefY = 1.0, coefRx = 1.0;
+        while(opModeIsActive()) {
+            Pose2d pose = driveLocalizer.getPose();
 
-        while (opModeIsActive()) {
+            if (gamepad1.circleWasPressed()) {
+                Vector2d poseCoordinates = new Vector2d(pose.position.x, pose.position.y);
+                Vector2d NodeCoordinates = Utils.robotNode(poseCoordinates, drive.PARAMS.inPerTick, tableObj.mu);
 
-            // FIRST: update pose estimate
-            driveLocalizer.update();
+                Node startNode = tableObj.table[(int)NodeCoordinates.y][(int)NodeCoordinates.x];
+                startNode.isStart = true;
+                Node endNode = tableObj.table[200][200];
+                endNode.isEnd = true;
 
-            // THEN: get pose after update
-            Vector2d robotCoordinates = driveLocalizer.getPose().position;
-            double headingDegrees = Math.toDegrees(drive.localizer.getPose().heading.toDouble());
-
-            // Get joystick inputs
-            double x = gamepad1.left_stick_x * coefX;
-            double y = gamepad1.left_stick_y * coefY;
-            double rx = -gamepad1.right_stick_x * coefRx;
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-
-            robot.frontLeftMotor.setPower(frontLeftPower);
-            robot.backLeftMotor.setPower(backLeftPower);
-            robot.frontRightMotor.setPower(frontRightPower);
-            robot.backRightMotor.setPower(backRightPower);
-
-            if (gamepad1.square) {
-                telemetry.addLine("Square pressed. Starting pathfinding...");
-                telemetry.update();
-
-                int startX = (int) (robotCoordinates.x + Math.ceil(robotPreset.width / 2.0));
-                int startY = (int) (robotCoordinates.y + Math.ceil(robotPreset.height / 2.0));
-                Node start = new Node(startX, startY);
-                start.isStart = true;
-
-                Node end = tableObj.table[100][100];
-                end.isEnd = true;
-
-                telemetry.addLine("Running A*...");
-                telemetry.update();
-                path = PointToPoint.aStar(tableObj, start, end, robotPreset);
-
-                if (path != null && !path.isEmpty()) {
-                    telemetry.addLine("Path found. Executing...");
-                    telemetry.update();
-
-                    tableObj.apply_path_to_table(path);
-                    tableObj.generate_robot(robotPreset, new int[]{start.y, start.x});
-                    tableObj.print_matrix();
-
-                    List<String> moves = PointToPoint.path_to_commands(path, tableObj);
-                    List<String> compressedMoves = PointToPoint.compress_path(moves);
-                    PointToPoint.execute_path(compressedMoves, drive, driveLocalizer.getPose());
-
-                    telemetry.addLine("Path executed.");
-                } else {
-                    telemetry.addLine("No path found.");
-                }
-                telemetry.update();
+                List<Node> path = PointToPoint.aStar(tableObj, startNode, endNode, robotPointToPoint);
+                assert path != null;
+                tableObj.applyPathToTable(path);
+                tableObj.generateRobot(robotPointToPoint, new int[]{startNode.y, startNode.x});
+                tableObj.printMatrix();
+                List<String> moves = PointToPoint.pathToCommands(path, tableObj);
+                List<String> compressedMoves = PointToPoint.compressPath(moves);
+                PointToPoint.executePath(compressedMoves, drive, pose);
             }
 
-            // Telemetry
-            Utils.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
-            Utils.displayCodeVersion(telemetry, "7.8.25.09.50");
-            Utils.displayCoordonates(telemetry, robotCoordinates.x, robotCoordinates.y, headingDegrees);
+            Utils.displayCodeVersion(telemetry,"7.9.25.18.15");
+            Utils.displayCoordonates(telemetry, pose.position.x, pose.position.y, pose.heading.toDouble());
             telemetry.update();
+            driveLocalizer.update();
         }
     }
 }

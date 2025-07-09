@@ -21,12 +21,12 @@ public class PointToPoint {
             "left(", "left-up(", "up(", "right-up("
     };
 
-    public static double lenght(int[] a_coordonates, int[] b_coordonates){
+    public static double euclidianLenght(int[] a_coordonates, int[] b_coordonates){
         return Math.sqrt(Math.pow(a_coordonates[0] - b_coordonates[0], 2)
                 + Math.pow(a_coordonates[1] - b_coordonates[1], 2));
     }
 
-    public static int manhattan_lenght(int[] a_coordonates, int[] b_coordonates) {
+    public static int manhattanLenght(int[] a_coordonates, int[] b_coordonates) {
         return Math.abs(a_coordonates[0] - b_coordonates[0]) +
                 Math.abs(a_coordonates[1] - b_coordonates[1]);
     }
@@ -60,7 +60,7 @@ public class PointToPoint {
 
     public static List<Node> aStar(Table table, Node startNode, Node endNode, Robot robot) {
         startNode.g = 0;
-        startNode.h = manhattan_lenght(startNode.coordonates, endNode.coordonates);
+        startNode.h = manhattanLenght(startNode.coordonates, endNode.coordonates);
         startNode.f = startNode.g + startNode.h;
 
         List<Node> openSet = new ArrayList<>();
@@ -90,12 +90,12 @@ public class PointToPoint {
             for (Node neighbor : getNeighbors(currentNode, table)) {
                 if (closedSet.contains(neighbor)) continue;
 
-                double tentativeG = currentNode.g + lenght(currentNode.coordonates, neighbor.coordonates);
+                double tentativeG = currentNode.g + euclidianLenght(currentNode.coordonates, neighbor.coordonates);
 
                 if (tentativeG < neighbor.g) {
                     neighbor.parent = currentNode;
                     neighbor.g = tentativeG;
-                    neighbor.h = manhattan_lenght(neighbor.coordonates, endNode.coordonates);
+                    neighbor.h = manhattanLenght(neighbor.coordonates, endNode.coordonates);
                     neighbor.f = neighbor.g + neighbor.h;
 
                     if (!openSet.contains(neighbor)) {
@@ -107,7 +107,7 @@ public class PointToPoint {
         return null;
     }
 
-    public static List<String> path_to_commands(List<Node> path, Table table) {
+    public static List<String> pathToCommands(List<Node> path, Table table) {
         List<String> movementList = new ArrayList<>();
 
         for (int i = 0; i < path.size() - 1; i++) {
@@ -141,7 +141,7 @@ public class PointToPoint {
         return movementList;
     }
 
-    public static List<String> compress_path(List<String> movementList) {
+    public static List<String> compressPath(List<String> movementList) {
         List<String> compressedPath = new ArrayList<>();
         int i = 0;
         while (i < movementList.size()) {
@@ -170,7 +170,7 @@ public class PointToPoint {
         return compressedPath;
     }
 
-    public static void execute_path(List<String> compressedPath, MecanumDrive drive, Pose2d startPose) {
+    public static void executePath(List<String> compressedPath, MecanumDrive drive, Pose2d startPose) {
         Pose2d currentPose = startPose;
 
         for (String move : compressedPath) {
@@ -225,7 +225,6 @@ public class PointToPoint {
             if (action != null) {
                 Actions.runBlocking(action);
                 currentPose = drive.localizer.getPose();
-                double headingDegrees = Math.toDegrees(currentPose.heading.toDouble());
                 System.out.println("Executed: " + funcName + "(" + length + ")");
             }
         }

@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.acmerobotics.roadrunner.Vector2d;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class Utils {
+public final class Utils {
 
     public static void displayMotorPowers(Telemetry telemetry,
                                           double frontLeftPower,
@@ -31,5 +32,19 @@ public class Utils {
         telemetry.addData("y position", y);
         telemetry.addLine("-----------------------------");
         telemetry.addData("heading in degrees", tetha);
+    }
+
+    public static double cmToInches(double cm) {
+        return cm / 2.54;
+    }
+
+    public static double inchesToCm(double cm) {
+        return cm * 2.54;
+    }
+
+    public static Vector2d robotNode(Vector2d poseCoordinates,  double ticksPerInch, int mu) {
+        double xNode = Math.ceil(inchesToCm(-poseCoordinates.x));
+        double yNode = Math.ceil(inchesToCm(poseCoordinates.y));
+        return new Vector2d(xNode, yNode);
     }
 }
