@@ -22,38 +22,75 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         Robot robotPointToPoint = new Robot(35, 43);
-        int startX = (int)(Utils.cmToInches((double) robotPointToPoint.width / 2)), startY = (int)(Utils.cmToInches((double) robotPointToPoint.height) / 2);
+        int startX = (int)(Utils.cmToInches((double) robotPointToPoint.width / 2) + 1), startY = (int)(Utils.cmToInches((double) robotPointToPoint.height) / 2 + 1);
         int startHeading = 0; // in degrees
         Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startHeading));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         MecanumDrive.DriveLocalizer driveLocalizer = drive.new DriveLocalizer(startPose);
-        Table tableObj = new Table(360, 360, 10);
+        Table tableObj = new Table(100, 100, 1);
         tableObj.markUnableToReachNodes(robotPointToPoint);
         tableObj.drawBorder(robotPointToPoint);
+        Node endNode = tableObj.table[50][50];
+
+        boolean lastCircle = false;
 
         waitForStart();
 
         while(opModeIsActive()) {
             Pose2d pose = driveLocalizer.getPose();
 
-            if (gamepad1.circleWasPressed()) {
+            boolean currentCircle = gamepad1.circle;
+            if (currentCircle && !lastCircle) {
                 Vector2d poseCoordinates = new Vector2d(pose.position.x, pose.position.y);
-                Vector2d NodeCoordinates = Utils.robotNode(poseCoordinates, drive.PARAMS.inPerTick, tableObj.mu);
+                Vector2d NodeCoordinates = Utils.robotNode(poseCoordinates);
 
-                Node startNode = tableObj.table[(int)NodeCoordinates.y][(int)NodeCoordinates.x];
+                int nodeX = (int) -NodeCoordinates.x;
+                int nodeY = (int) NodeCoordinates.y;
+
+                if (nodeX < 0 || nodeX >= tableObj.columns || nodeY < 0 || nodeY >= tableObj.rows) {
+                    telemetry.addLine("Invalid node index for A*!");
+                    telemetry.addData("X", nodeX);
+                    telemetry.addData("Y", nodeY);
+                    telemetry.update();
+                    return;
+                }
+
+                Node startNode = tableObj.table[(int)NodeCoordinates.y][(int)-NodeCoordinates.x];
                 startNode.isStart = true;
-                Node endNode = tableObj.table[200][200];
                 endNode.isEnd = true;
 
-                List<Node> path = PointToPoint.aStar(tableObj, startNode, endNode, robotPointToPoint);
-                assert path != null;
+                telemetry.addLine("a*");
+                telemetry.addData("y grid", (int)NodeCoordinates.y);
+                telemetry.addData("x grid", (int)-NodeCoordinates.x);
+                telemetry.update();
+                List<Node> path = null;
+                try {
+                    path = PointToPoint.aStar(tableObj, startNode, endNode, robotPointToPoint);
+                    if (path == null) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    telemetry.addLine("Exception during A* pathing");
+                    telemetry.addData("Message", e.getMessage());
+                    telemetry.update();
+                    e.printStackTrace(); // Also shows in logcat
+                }
+
                 tableObj.applyPathToTable(path);
+                telemetry.addLine("apply");
                 tableObj.generateRobot(robotPointToPoint, new int[]{startNode.y, startNode.x});
-                tableObj.printMatrix();
+                telemetry.addLine("generate map");
+                telemetry.update();
                 List<String> moves = PointToPoint.pathToCommands(path, tableObj);
+                telemetry.update();
                 List<String> compressedMoves = PointToPoint.compressPath(moves);
+                for (String command : compressedMoves) {
+                    telemetry.addLine(command);
+                }
+                telemetry.update();
                 PointToPoint.executePath(compressedMoves, drive, pose);
             }
+            lastCircle = currentCircle;
 
             Utils.displayCodeVersion(telemetry,"7.9.25.18.15");
             Utils.displayCoordonates(telemetry, pose.position.x, pose.position.y, pose.heading.toDouble());

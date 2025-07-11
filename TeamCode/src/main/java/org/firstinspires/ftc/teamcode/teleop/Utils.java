@@ -42,7 +42,7 @@ public final class Utils {
         return cm * 2.54;
     }
 
-    public static Vector2d robotNode(Vector2d poseCoordinates,  double ticksPerInch, int mu) {
+    public static Vector2d robotNode(Vector2d poseCoordinates) {
         double xNode = Math.ceil(inchesToCm(-poseCoordinates.x));
         double yNode = Math.ceil(inchesToCm(poseCoordinates.y));
         return new Vector2d(xNode, yNode);

@@ -8,11 +8,11 @@ import org.firstinspires.ftc.teamcode.teleop.Utils;
 @TeleOp(name = "DriveBase-TeleOp", group = "Dev-Teleops")
 public class DriveBaseTeleop extends LinearOpMode {
 
-    // Create Hardware instance
-    private final Hardware robot = new Hardware();
-
     @Override
     public void runOpMode() throws InterruptedException {
+
+        // Create Hardware instance
+        final Hardware robot = new Hardware();
 
         // Initialize hardware map
         robot.init(hardwareMap, 1);
