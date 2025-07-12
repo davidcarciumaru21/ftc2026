@@ -43,8 +43,8 @@ public final class Utils {
     }
 
     public static Vector2d robotNode(Vector2d poseCoordinates) {
-        double xNode = Math.ceil(inchesToCm(-poseCoordinates.x));
-        double yNode = Math.ceil(inchesToCm(poseCoordinates.y));
+        double xNode = poseCoordinates.x;
+        double yNode = poseCoordinates.y;
         return new Vector2d(xNode, yNode);
     }
 }

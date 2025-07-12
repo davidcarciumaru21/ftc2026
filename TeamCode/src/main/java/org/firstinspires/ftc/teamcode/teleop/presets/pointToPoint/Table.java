@@ -133,4 +133,18 @@ public class Table {
             }
         }
     }
+
+    public void resetNodeStates() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                Node node = table[row][col];
+                node.isStart = false;
+                node.isEnd = false;
+                node.isPath = false;
+                node.g = 0;
+                node.h = 0;
+                node.f = 0;
+            }
+        }
+    }
 }
