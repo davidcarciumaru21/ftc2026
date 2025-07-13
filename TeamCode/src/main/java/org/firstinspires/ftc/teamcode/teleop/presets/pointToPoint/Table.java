@@ -137,13 +137,14 @@ public class Table {
     public void resetNodeStates() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                Node node = table[row][col];
-                node.isStart = false;
-                node.isEnd = false;
-                node.isPath = false;
-                node.g = 0;
-                node.h = 0;
-                node.f = 0;
+                table[row][col].isStart = false;
+                table[row][col].isEnd = false;
+                table[row][col].isPath = false;
+                table[row][col].hasRobot = false;
+                table[row][col].g = Double.POSITIVE_INFINITY;
+                table[row][col].h = 0;
+                table[row][col].f = Double.POSITIVE_INFINITY;
+                table[row][col].parent = null;
             }
         }
     }

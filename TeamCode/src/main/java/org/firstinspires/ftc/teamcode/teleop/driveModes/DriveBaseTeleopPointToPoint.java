@@ -28,7 +28,7 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
         Robot robotPointToPoint = new Robot((int) Utils.cmToInches(35.0), (int) Utils.cmToInches(43.0));
         double startX = robotPointToPoint.width / 2;
         double startY = robotPointToPoint.height / 2;
-        boolean buzy = false;
+        boolean busy = false;
         int startHeading = 0;
         Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startHeading));
 
@@ -42,13 +42,9 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
 
         boolean lastCircle = false;
 
-        // Create Hardware instance
-        final Hardware robotHardware = new Hardware();
-
-        // Initialize hardware map
+        Hardware robotHardware = new Hardware();
         robotHardware.init(hardwareMap, 2);
 
-        // Coefficients for joystick inputs
         double coefX = 1.1;
         double coefY = 1.0;
         double coefRx = 1.0;
@@ -61,10 +57,10 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
             Pose2d pose = driveLocalizer.getPose();
 
             Vector2d poseCoordinates = new Vector2d(pose.position.x, pose.position.y);
-            Vector2d NodeCoordinates = Utils.robotNode(poseCoordinates);
+            Vector2d nodeCoordinates = Utils.robotNode(poseCoordinates);
 
-            int nodeX = (int) NodeCoordinates.x;
-            int nodeY = 2 * (int) startY - (int) NodeCoordinates.y;
+            int nodeX = (int) nodeCoordinates.x;
+            int nodeY = 2 * (int) startY - (int) nodeCoordinates.y;
 
             telemetry.addData("xNode", nodeX);
             telemetry.addData("yNode", nodeY);
@@ -72,9 +68,14 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
 
             boolean currentCircle = gamepad1.circle;
 
-            if (currentCircle && !lastCircle) {
-                buzy = true;
-                // Valid bounds check
+            if (currentCircle && !lastCircle && !busy) {
+                busy = true;
+
+                tableObj.resetNodeStates();
+
+                tableObj.drawBorder(robotPointToPoint);
+                tableObj.markUnableToReachNodes(robotPointToPoint);
+
                 boolean nodeInBounds = nodeX >= 0 && nodeX < tableObj.columns && nodeY >= 0 && nodeY < tableObj.rows;
 
                 if (!nodeInBounds) {
@@ -85,6 +86,7 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
                 } else {
                     try {
                         Node startNode = tableObj.table[nodeY][nodeX];
+                        endNode = tableObj.table[8][7];
                         startNode.isStart = true;
                         endNode.isEnd = true;
 
@@ -102,37 +104,43 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
                             for (String command : compressedMoves) {
                                 telemetry.addLine(command);
                             }
+
                             telemetry.addLine("Executing path...");
-                            PointToPoint.executePath(compressedMoves, drive, pose);
+                            telemetry.update();
+
+                            // Update localization
+                            driveLocalizer.update();
+                            Pose2d updatedPose = driveLocalizer.getPose();
+
+                            PointToPoint.executePath(compressedMoves, drive, updatedPose);
                         }
+
                     } catch (Exception e) {
                         telemetry.addLine("Exception during A* pathing");
                         telemetry.addData("Message", e.getMessage());
+                        telemetry.update();
                         e.printStackTrace();
                     }
-
-                    telemetry.update();
                 }
-                buzy = false;
+
+                busy = false;
             }
 
             lastCircle = currentCircle;
-            if(buzy == false) {
-                // Read joystick inputs and apply coefficients
+
+            // Manual drive if not executing path
+            if (!busy) {
                 double x = gamepad1.left_stick_x * coefX;
                 double y = gamepad1.left_stick_y * coefY;
                 double rx = -gamepad1.right_stick_x * coefRx;
 
-                // Normalize denominator to keep power in [-1,1]
                 double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
 
-                // Calculate motor powers
                 double frontLeftPower = (y + x + rx) / denominator;
                 double backLeftPower = (y - x + rx) / denominator;
                 double frontRightPower = (y - x - rx) / denominator;
                 double backRightPower = (y + x - rx) / denominator;
 
-                // Set motor powers
                 robotHardware.frontLeftMotor.setPower(frontLeftPower);
                 robotHardware.backLeftMotor.setPower(backLeftPower);
                 robotHardware.frontRightMotor.setPower(frontRightPower);
