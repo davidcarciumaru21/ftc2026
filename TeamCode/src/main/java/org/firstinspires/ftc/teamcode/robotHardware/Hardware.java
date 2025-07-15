@@ -3,15 +3,17 @@ package org.firstinspires.ftc.teamcode.robotHardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 public final class Hardware {
     public DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 
     public void init(HardwareMap hardwareMap, int mode) {
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeft");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRightMotor = hardwareMap.get(DcMotor.class, "frontRight");
-        backRightMotor = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeftMotor = hardwareMap.get(DcMotor.class, "MotorFL");
+        backLeftMotor = hardwareMap.get(DcMotor.class, "MotorBL");
+        frontRightMotor = hardwareMap.get(DcMotor.class, "MotorFR");
+        backRightMotor = hardwareMap.get(DcMotor.class, "MotorBR");
 
         if (mode == 1) {
             frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);

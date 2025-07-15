@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 public class PointToPoint {
 
+    // 8 directions: [dx, dy]
     private static final int[][] DIRECTIONS = {
             {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}
     };
@@ -20,6 +21,7 @@ public class PointToPoint {
             "right(", "right-down(", "down(", "left-down(",
             "left(", "left-up(", "up(", "right-up("
     };
+
 
     public static double euclidianLenght(int[] a_coordonates, int[] b_coordonates){
         return Math.sqrt(Math.pow(a_coordonates[0] - b_coordonates[0], 2)
@@ -123,7 +125,7 @@ public class PointToPoint {
                 if (DIRECTIONS[j][0] == dx && DIRECTIONS[j][1] == dy) {
                     double distance;
                     if (j % 2 == 1) {
-                        distance = table.mu * Math.sqrt(2);
+                        distance = table.mu * 1.4142;
                     } else {
                         distance = table.mu;
                     }
