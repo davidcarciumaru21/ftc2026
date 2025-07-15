@@ -10,24 +10,25 @@ import org.firstinspires.ftc.teamcode.Utils.Utils;
 import org.firstinspires.ftc.teamcode.robotHardware.Hardware;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
-public class typesOfDriving extends LinearOpMode{
+public class typesOfDriving extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // SHARE button state tracking for toggling drive modes
         boolean currentShareStateGamepad1;
         boolean lastShareGamepad1 = false;
         boolean currentShareStateGamepad2;
         boolean lastShareGamepad2 = false;
 
+        // Drive mode tracking: 1 = normal, 2 = field-centric
         byte driveModeGamepad1 = 1, driveModeGamepad2 = 1;
 
-        // Create Hardware instance
+        // Create and initialize hardware instance
         final Hardware robotHardware = new Hardware();
+        robotHardware.init(hardwareMap, (byte) 2);
 
-        // Initialize hardware map
-        robotHardware.init(hardwareMap, 2);
-
+        // Speed scaling coefficients for both gamepads
         double coefXGamepad1 = 1.0;
         double coefYGamepad1 = 1.0;
         double coefRxGamepad1 = 1.0;
@@ -36,37 +37,45 @@ public class typesOfDriving extends LinearOpMode{
         double coefYGamepad2 = 1.0;
         double coefRxGamepad2 = 1.0;
 
+        // Movement variables
         double x, y, rx, denominator;
         double frontLeftPower = 0, backLeftPower = 0, frontRightPower = 0, backRightPower = 0;
-
         double botHeading, rotX, rotY;
 
+        // Initialize IMU (Inertial Measurement Unit) with hub orientation
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.DOWN));
         imu.initialize(parameters);
 
+        // Wait for the start button
         waitForStart();
 
-        while(opModeIsActive()) {
+        // Main control loop
+        while (opModeIsActive()) {
 
+            // === Update speed coefficients based on Gamepad1 bumper input ===
             coefXGamepad1 = 1.0;
             coefYGamepad1 = 1.0;
             coefRxGamepad1 = 1.0;
-            coefXGamepad2 = 1.0;
-            coefYGamepad2 = 1.0;
-            coefRxGamepad2 = 1.0;
 
             if (gamepad1.right_bumper) {
+                // 50% speed mode
                 coefXGamepad1 = 0.5;
                 coefYGamepad1 = 0.5;
                 coefRxGamepad1 = 0.5;
             } else if (gamepad1.left_bumper) {
+                // 25% precision mode
                 coefXGamepad1 = 0.25;
                 coefYGamepad1 = 0.25;
                 coefRxGamepad1 = 0.25;
             }
+
+            // === Same logic for Gamepad2 bumpers ===
+            coefXGamepad2 = 1.0;
+            coefYGamepad2 = 1.0;
+            coefRxGamepad2 = 1.0;
 
             if (gamepad2.right_bumper) {
                 coefXGamepad2 = 0.5;
@@ -78,109 +87,101 @@ public class typesOfDriving extends LinearOpMode{
                 coefRxGamepad2 = 0.25;
             }
 
+            // === Detect drive mode toggle via SHARE button press ===
             currentShareStateGamepad1 = gamepad1.share;
             currentShareStateGamepad2 = gamepad2.share;
 
-            if (currentShareStateGamepad1 && !lastShareGamepad1 && driveModeGamepad1 == 1 ) {
-                driveModeGamepad1 = 2;
-            } else if(currentShareStateGamepad1 && !lastShareGamepad1) {
-                driveModeGamepad1 = 1;
+            // Toggle Gamepad1 mode: 1 ↔ 2
+            if (currentShareStateGamepad1 && !lastShareGamepad1) {
+                if (driveModeGamepad1 == 1) {
+                    driveModeGamepad1 = 2;
+                } else {
+                    driveModeGamepad1 = 1;
+                }
             }
 
-            if (currentShareStateGamepad2 && !lastShareGamepad2 && driveModeGamepad2 == 1) {
-                driveModeGamepad2 = 2;
-            } else if(currentShareStateGamepad2 && !lastShareGamepad2) {
-                driveModeGamepad2 = 1;
+            // Toggle Gamepad2 mode: 1 ↔ 2
+            if (currentShareStateGamepad2 && !lastShareGamepad2) {
+                if (driveModeGamepad2 == 1) {
+                    driveModeGamepad2 = 2;
+                } else {
+                    driveModeGamepad2 = 1;
+                }
             }
 
-            if (driveModeGamepad2 == 1) {
-                // Read joystick inputs and apply coefficients
-                x = gamepad1.left_stick_x * coefXGamepad2;
-                y = gamepad1.left_stick_y * coefYGamepad2;
-                rx = -gamepad1.right_stick_x * coefRxGamepad2;
+            // === Prioritize Gamepad2 control if any joystick input is detected ===
+            boolean gamepad2Active = Math.abs(gamepad2.left_stick_x) > 0.05 ||
+                    Math.abs(gamepad2.left_stick_y) > 0.05 ||
+                    Math.abs(gamepad2.right_stick_x) > 0.05;
 
-                // Normalize denominator to keep power in [-1,1]
-                denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            if (gamepad2Active) {
+                // === Gamepad2 controls drive ===
+                x = gamepad2.left_stick_x * coefXGamepad2;
+                y = gamepad2.left_stick_y * coefYGamepad2;
+                rx = -gamepad2.right_stick_x * coefRxGamepad2;
 
-                // Calculate motor powers
-                frontLeftPower = (y + x + rx) / denominator;
-                backLeftPower = (y - x + rx) / denominator;
-                frontRightPower = (y - x - rx) / denominator;
-                backRightPower = (y + x - rx) / denominator;
+                if (driveModeGamepad2 == 1) {
+                    // Standard (robot-centric) driving
+                    denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                    frontLeftPower = (y + x + rx) / denominator;
+                    backLeftPower = (y - x + rx) / denominator;
+                    frontRightPower = (y - x - rx) / denominator;
+                    backRightPower = (y + x - rx) / denominator;
 
-            } else if (driveModeGamepad2 == 2) {
-                // Read joystick inputs and apply coefficients
-                x = gamepad1.left_stick_x * coefXGamepad2;
-                y = gamepad1.left_stick_y * coefYGamepad2;
-                rx = -gamepad1.right_stick_x * coefRxGamepad2;
+                } else {
+                    // Field-centric driving using IMU heading
+                    botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+                    rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                    rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-                botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-                // Rotate the movement direction counter to the bot's rotation
-                rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-                rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-                rotX *= coefXGamepad2;
-                rotY *= coefYGamepad2;
-                rx *= coefRxGamepad2;
-
-                denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-                frontLeftPower = (rotY + rotX + rx) / denominator;
-                backLeftPower = (rotY - rotX + rx) / denominator;
-                frontRightPower = (rotY - rotX - rx) / denominator;
-                backRightPower = (rotY + rotX - rx) / denominator;
-            }
-
-            if (driveModeGamepad1 == 1) {
-                // Read joystick inputs and apply coefficients
+                    denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+                    frontLeftPower = (rotY + rotX + rx) / denominator;
+                    backLeftPower = (rotY - rotX + rx) / denominator;
+                    frontRightPower = (rotY - rotX - rx) / denominator;
+                    backRightPower = (rotY + rotX - rx) / denominator;
+                }
+            } else {
+                // === Gamepad1 takes over if Gamepad2 is idle ===
                 x = gamepad1.left_stick_x * coefXGamepad1;
                 y = gamepad1.left_stick_y * coefYGamepad1;
                 rx = -gamepad1.right_stick_x * coefRxGamepad1;
 
-                // Normalize denominator to keep power in [-1,1]
-                denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                if (driveModeGamepad1 == 1) {
+                    // Robot-centric
+                    denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                    frontLeftPower = (y + x + rx) / denominator;
+                    backLeftPower = (y - x + rx) / denominator;
+                    frontRightPower = (y - x - rx) / denominator;
+                    backRightPower = (y + x - rx) / denominator;
 
-                // Calculate motor powers
-                frontLeftPower = (y + x + rx) / denominator;
-                backLeftPower = (y - x + rx) / denominator;
-                frontRightPower = (y - x - rx) / denominator;
-                backRightPower = (y + x - rx) / denominator;
+                } else {
+                    // Field-centric
+                    botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+                    rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                    rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            } else if (driveModeGamepad1 == 2) {
-                // Read joystick inputs and apply coefficients
-                x = gamepad1.left_stick_x * coefXGamepad1;
-                y = gamepad1.left_stick_y * coefYGamepad1;
-                rx = -gamepad1.right_stick_x * coefRxGamepad1;
-
-                botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-                // Rotate the movement direction counter to the bot's rotation
-                rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-                rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-                rotX *= coefXGamepad1;
-                rotY *= coefYGamepad1;
-                rx *= coefRxGamepad1;
-
-                denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-                frontLeftPower = (rotY + rotX + rx) / denominator;
-                backLeftPower = (rotY - rotX + rx) / denominator;
-                frontRightPower = (rotY - rotX - rx) / denominator;
-                backRightPower = (rotY + rotX - rx) / denominator;
+                    denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+                    frontLeftPower = (rotY + rotX + rx) / denominator;
+                    backLeftPower = (rotY - rotX + rx) / denominator;
+                    frontRightPower = (rotY - rotX - rx) / denominator;
+                    backRightPower = (rotY + rotX - rx) / denominator;
+                }
             }
 
+            // === Update last SHARE button states for edge detection ===
             lastShareGamepad1 = currentShareStateGamepad1;
             lastShareGamepad2 = currentShareStateGamepad2;
 
+            // === Set calculated powers to motors ===
             robotHardware.frontLeftMotor.setPower(frontLeftPower);
             robotHardware.backLeftMotor.setPower(backLeftPower);
             robotHardware.frontRightMotor.setPower(frontRightPower);
             robotHardware.backRightMotor.setPower(backRightPower);
 
+            // === Display telemetry for debugging and monitoring ===
             Utils.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
             Utils.displayCodeVersion(telemetry, "7.15.25.5.51");
             telemetry.update();
         }
-
     }
 }
