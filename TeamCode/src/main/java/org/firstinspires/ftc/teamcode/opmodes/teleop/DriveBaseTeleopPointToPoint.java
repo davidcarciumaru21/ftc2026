@@ -45,13 +45,29 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
 
         boolean lastBState = false;
         boolean currentBState;
+        boolean lastCircle = false;
 
+        // Create Hardware instance
+        final Hardware robotHardware = new Hardware();
+
+        // Initialize hardware map
+        robotHardware.init(hardwareMap, 2);
+
+        // Coefficients for joystick inputs
+        double coefX = 1.1;
+        double coefY = 1.0;
+        double coefRx = 1.0;
         int xNode, yNode;
         Node currentNode;
+        boolean buzy = false;
 
-        Node endNode = tableObj.table[20][20];
+        Node endNode = tableObj.table[15][15];
 
         List<Node> path;
+
+        double x, y, rx;
+        double denominator = 0;
+        double frontLeftPower, backLeftPower, frontRightPower, backRightPower;
 
         waitForStart();
 
@@ -67,8 +83,7 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
             currentBState = gamepad1.circle;
 
             if (currentBState && !lastBState) {
-                telemetry.addLine("hello");
-                telemetry.update();
+                buzy = true;
                 try {
                     currentNode.isStart = true;
                     endNode.isEnd = true;
@@ -87,7 +102,31 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
                     telemetry.addLine("Unable to get to the point");
                     telemetry.update();
                 }
+                buzy = false;
             }
+
+            if(buzy == false) {
+                // Read joystick inputs and apply coefficients
+                x = -gamepad1.left_stick_x * coefX;
+                y = gamepad1.left_stick_y * coefY;
+                rx = -gamepad1.right_stick_x * coefRx;
+
+                // Normalize denominator to keep power in [-1,1]
+                denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+
+                // Calculate motor powers
+                frontLeftPower = (y + x + rx) / denominator;
+                backLeftPower = (y - x + rx) / denominator;
+                frontRightPower = (y - x - rx) / denominator;
+                backRightPower = (y + x - rx) / denominator;
+
+                // Set motor powers
+                robotHardware.frontLeftMotor.setPower(frontLeftPower);
+                robotHardware.backLeftMotor.setPower(backLeftPower);
+                robotHardware.frontRightMotor.setPower(frontRightPower);
+                robotHardware.backRightMotor.setPower(backRightPower);
+            }
+
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
             telemetry.addData("NodeX", xNode);
