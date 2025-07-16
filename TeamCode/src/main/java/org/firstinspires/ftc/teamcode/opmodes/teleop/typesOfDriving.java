@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import org.firstinspires.ftc.teamcode.Utils.Telemetry;
+import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.systems.gamepad.Gamepads;
 
@@ -49,6 +50,15 @@ public class typesOfDriving extends LinearOpMode {
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.DOWN));
         imu.initialize(parameters);
+
+        Positions.ArmPosition basketPos = Positions.getBasket();
+        Positions.ArmPosition perimeterPos = Positions.getPerimeter();
+        Positions.ArmPosition specimenUpPos = Positions.getSpecimenUp();
+        Positions.ArmPosition specimenDownPos = Positions.getSpecimenDown();
+        Positions.ArmPosition submersibil1 = Positions.getSubmersibil1();
+        Positions.ArmPosition submersibil2 = Positions.getSubmersibil2();
+        Positions.ArmPosition basket3 = Positions.getBasket3();
+        Positions.ArmPosition perimeterUp = Positions.getPerimeterUP();
 
         // Wait for the start button
         waitForStart();
