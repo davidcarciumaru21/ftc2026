@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.firstinspires.ftc.teamcode.trajectories.MecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.MecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;

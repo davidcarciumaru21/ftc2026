@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.trajectories;
+package org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;

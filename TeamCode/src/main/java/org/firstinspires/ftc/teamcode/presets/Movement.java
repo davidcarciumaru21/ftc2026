@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.presets;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import org.firstinspires.ftc.teamcode.trajectories.MecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.MecanumDrive;
 
 public class Movement {
 

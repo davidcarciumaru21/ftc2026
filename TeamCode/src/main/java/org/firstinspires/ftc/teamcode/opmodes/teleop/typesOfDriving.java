@@ -6,8 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import org.firstinspires.ftc.teamcode.Utils.Utils;
-import org.firstinspires.ftc.teamcode.robotHardware.Hardware;
+import org.firstinspires.ftc.teamcode.Utils.Telemetry;
+import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
+import org.firstinspires.ftc.teamcode.systems.gamepad.Gamepads;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
 public class typesOfDriving extends LinearOpMode {
@@ -26,7 +27,7 @@ public class typesOfDriving extends LinearOpMode {
 
         // Create and initialize hardware instance
         final Hardware robotHardware = new Hardware();
-        robotHardware.init(hardwareMap, (byte) 2);
+        robotHardware.init(hardwareMap, (byte) 1);
 
         // Speed scaling coefficients for both gamepads
         double coefXGamepad1 = 1.0;
@@ -62,10 +63,12 @@ public class typesOfDriving extends LinearOpMode {
 
             if (gamepad1.right_bumper) {
                 // 50% speed mode
+                Gamepads.rightBumperRumble(gamepad1);
                 coefXGamepad1 = 0.5;
                 coefYGamepad1 = 0.5;
                 coefRxGamepad1 = 0.5;
             } else if (gamepad1.left_bumper) {
+                Gamepads.leftBumperRumble(gamepad1);
                 // 25% precision mode
                 coefXGamepad1 = 0.25;
                 coefYGamepad1 = 0.25;
@@ -78,10 +81,12 @@ public class typesOfDriving extends LinearOpMode {
             coefRxGamepad2 = 1.0;
 
             if (gamepad2.right_bumper) {
+                Gamepads.rightBumperRumble(gamepad2);
                 coefXGamepad2 = 0.5;
                 coefYGamepad2 = 0.5;
                 coefRxGamepad2 = 0.5;
             } else if (gamepad2.left_bumper) {
+                Gamepads.leftBumperRumble(gamepad2);
                 coefXGamepad2 = 0.25;
                 coefYGamepad2 = 0.25;
                 coefRxGamepad2 = 0.25;
@@ -116,7 +121,7 @@ public class typesOfDriving extends LinearOpMode {
 
             if (gamepad2Active) {
                 // === Gamepad2 controls drive ===
-                x = gamepad2.left_stick_x * coefXGamepad2;
+                x = -gamepad2.left_stick_x * coefXGamepad2;
                 y = gamepad2.left_stick_y * coefYGamepad2;
                 rx = -gamepad2.right_stick_x * coefRxGamepad2;
 
@@ -142,7 +147,7 @@ public class typesOfDriving extends LinearOpMode {
                 }
             } else {
                 // === Gamepad1 takes over if Gamepad2 is idle ===
-                x = gamepad1.left_stick_x * coefXGamepad1;
+                x = -gamepad1.left_stick_x * coefXGamepad1;
                 y = gamepad1.left_stick_y * coefYGamepad1;
                 rx = -gamepad1.right_stick_x * coefRxGamepad1;
 
@@ -179,8 +184,8 @@ public class typesOfDriving extends LinearOpMode {
             robotHardware.backRightMotor.setPower(backRightPower);
 
             // === Display telemetry for debugging and monitoring ===
-            Utils.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
-            Utils.displayCodeVersion(telemetry, "7.15.25.5.51");
+            Telemetry.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
+            Telemetry.displayCodeVersion(telemetry, "7.15.25.5.51");
             telemetry.update();
         }
     }

@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Utils.Utils;
-import org.firstinspires.ftc.teamcode.robotHardware.Hardware;
+import org.firstinspires.ftc.teamcode.Utils.Telemetry;
+import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 
 @TeleOp(name = "DriveBase-TeleOp", group = "Dev-Teleops")
 public class DriveBaseTeleop extends LinearOpMode {
@@ -14,7 +14,7 @@ public class DriveBaseTeleop extends LinearOpMode {
 
         // Create and initialize robot hardware instance
         final Hardware robot = new Hardware();
-        robot.init(hardwareMap, (byte) 1); // Mode '1' likely indicates configuration type
+        robot.init(hardwareMap, (byte) 1);
 
         // Joystick sensitivity coefficients for tuning strafing, forward, and rotation control
         double coefX = 1.1;  // Strafing (left/right) compensation factor
@@ -47,10 +47,10 @@ public class DriveBaseTeleop extends LinearOpMode {
             robot.backRightMotor.setPower(backRightPower);
 
             // Display motor power values on telemetry for debugging
-            Utils.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
+            Telemetry.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
 
             // Display version tag (for tracking builds or testing releases)
-            Utils.displayCodeVersion(telemetry, "7.5.25.17.29");
+            Telemetry.displayCodeVersion(telemetry, "7.5.25.17.29");
 
             // Push telemetry to driver station
             telemetry.update();
