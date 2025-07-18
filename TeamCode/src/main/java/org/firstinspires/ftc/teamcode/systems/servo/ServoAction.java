@@ -16,14 +16,11 @@ public class ServoAction {
     }
     public Action setPower(double power) {
         return new Action() {
-            boolean initialized = false;
 
             @Override
             public boolean run(TelemetryPacket packet) {
-                if (!initialized) {
-                    intake.setPower(power);
-                    initialized = true;
-                }
+                intake.setPower(power);
+
                 // Stop immediately after setting power once
                 return false;
             }

@@ -5,14 +5,12 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 // Hardware/system imports
 import org.firstinspires.ftc.teamcode.Utils.MeasurementUnit;
-import org.firstinspires.ftc.teamcode.presets.Robot;
 import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.MecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
@@ -64,30 +62,169 @@ public class testAuto extends LinearOpMode {
         waitForStart();
 
         // --- Drive to target zone using a spline path ---
-        Action splineToDrop = Movement.spline(25, 65, drive, startPose, -50); // Spline path to target area
+        Action splineToDrop = Movement.spline(30, 50, drive, startPose, -50); // Spline path to target area
         Actions.runBlocking(new ParallelAction(
                 splineToDrop,
                 basket
         ));
 
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action back = Movement.straight(-10, drive, currentPose);
+        Actions.runBlocking(back);
+
         // --- Run the intake/outtake servo to release the object ---
         Actions.runBlocking(servoOut);
         sleep(1000); // Allow 1 second for ejection
 
-        // --- Lower the arm and stop the servo ---
-        Actions.runBlocking(new ParallelAction(
-                submersibil2,
-                servoStop
-        ));
+        Actions.runBlocking(servoStop);
 
-        // --- Update pose estimation again ---
         driveLocalizer.update();
         currentPose = driveLocalizer.getPose();
 
-        Action turnPick = Movement.turnTo(-15, drive, currentPose);
+
+        Action backToPositon = Movement.straight(7, drive, currentPose );
+        Actions.runBlocking(new ParallelAction(
+                backToPositon,
+                submersibil2
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action turnPick = Movement.turnTo(10, drive, currentPose);
         Actions.runBlocking(new ParallelAction(
                 turnPick,
                 servoIn
         ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action smallForwardPick = Movement.straight(2, drive, currentPose);
+        Actions.runBlocking(smallForwardPick);
+
+        sleep(1000);
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action turnBack = Movement.turnTo(-50, drive, currentPose);
+        Actions.runBlocking(new ParallelAction(
+                turnBack,
+                servoStop
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action strafeLeft = Movement.strafe(0, 18, drive, currentPose);
+
+        Actions.runBlocking(new ParallelAction(
+                strafeLeft,
+                basket
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+
+        Action backdrop = Movement.straight(-7, drive, currentPose);
+        Actions.runBlocking(new SequentialAction(
+                backdrop,
+                servoOut
+        ));
+
+        sleep(1000);
+
+        Actions.runBlocking(servoStop);
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action forwardPick = Movement.straight(7,drive, currentPose);
+
+        Actions.runBlocking(new ParallelAction(
+                forwardPick,
+                submersibil2
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action turnPick2 = Movement.turnTo(22, drive, currentPose);
+        Actions.runBlocking(new ParallelAction(
+                turnPick2,
+                servoIn
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action forwardPick2 = Movement.straight(3, drive, currentPose);
+        Actions.runBlocking(forwardPick2);
+
+        sleep(1000);
+
+        Actions.runBlocking(servoStop);
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action backToDrop = Movement.turnTo(-55, drive ,currentPose);
+        Actions.runBlocking(new ParallelAction(
+                backToDrop,
+                basket
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action strafeToDrop = Movement.strafe(0, 9, drive, currentPose);
+        Actions.runBlocking(strafeToDrop);
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action backToDrop2 = Movement.straight(-11, drive, currentPose);
+        Actions.runBlocking(new SequentialAction(
+                backToDrop2,
+                servoOut
+        ));
+
+        sleep(1000);
+
+        Actions.runBlocking(new SequentialAction(
+                servoStop,
+                submersibil2
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action forwardPick3 = Movement.straight(8, drive, currentPose);
+        Actions.runBlocking(forwardPick3);
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action turnPick3 = Movement.turnTo(32, drive, currentPose);
+        Actions.runBlocking(new ParallelAction(
+                turnPick3,
+                servoIn
+        ));
+
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        Action smallForwardPick3 = Movement.straight(3, drive, currentPose);
+        Actions.runBlocking(smallForwardPick3);
+
+        while(opModeIsActive()){
+            telemetry.addLine("Done!");
+            telemetry.addData("Time: ", getRuntime());
+            telemetry.update();
+        }
     }
 }

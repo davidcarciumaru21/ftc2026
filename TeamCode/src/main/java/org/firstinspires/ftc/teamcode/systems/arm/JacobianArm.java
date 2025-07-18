@@ -75,10 +75,12 @@ public final class JacobianArm {
     }
 
     public final boolean isMoving() {
-        if (this.moving && !this.dof1.isBusy() && !this.dof2.isBusy()) {
-            this.moving = false;
+        if (Math.abs(dof1.getTargetPosition() - dof1.getCurrentPosition()) > 50 || Math.abs(dof2.getTargetPosition() - dof2.getCurrentPosition()) > 50) {
+            return true;
         }
-        return this.moving;
+        else {
+            return false;
+        }
     }
 
     public final Pair<Double, Double> getPosition() {

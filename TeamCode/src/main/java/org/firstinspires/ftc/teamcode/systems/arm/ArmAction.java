@@ -12,21 +12,18 @@ public class ArmAction {
 
     public Action ArmGoto(double x, double y, boolean elbowUp) {
         return new Action() {
-            boolean initialized = false;
             boolean valid = true;
 
             @Override
             public boolean run(TelemetryPacket packet) {
-                if (!initialized) {
-                    valid = arm.ArmGoto(x, y, elbowUp);
-                    initialized = true;
-                }
+                arm.ArmGoto(x, y, elbowUp);
 
-                if (!valid) {
-                    return true; // invalid target, abort immediately
+                if (arm.isMoving()) {
+                    return true;
                 }
-
-                return !arm.isMoving(); // finish action when arm is done moving
+                else{
+                    return false;
+                }
             }
         };
     }
