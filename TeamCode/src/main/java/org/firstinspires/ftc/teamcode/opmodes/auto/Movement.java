@@ -11,9 +11,39 @@ import org.firstinspires.ftc.teamcode.Utils.MeasurementUnit;
 public class Movement {
 
     /**
-     * Move straight in any dirrection
+     * Move right (positive Y direction) by a specified distance in centimeters.
      */
-    public static Action straight(double x, MecanumDrive drive, Pose2d pose) {
+    public static Action right(double y, MecanumDrive drive, Pose2d pose) {
+        double yI = MeasurementUnit.cmToInches(y);
+        return drive.actionBuilder(pose)
+                .strafeTo(new Vector2d(pose.position.x, pose.position.y + yI))
+                .build();
+    }
+
+    /**
+     * Move backward (negative X direction) by a specified distance in centimeters.
+     */
+    public static Action down(double x, MecanumDrive drive, Pose2d pose) {
+        double xI = MeasurementUnit.cmToInches(x);
+        return drive.actionBuilder(pose)
+                .lineToXConstantHeading(pose.position.x - xI)
+                .build();
+    }
+
+    /**
+     * Move left (negative Y direction) by a specified distance in centimeters.
+     */
+    public static Action left(double y, MecanumDrive drive, Pose2d pose) {
+        double yI = MeasurementUnit.cmToInches(y);
+        return drive.actionBuilder(pose)
+                .strafeTo(new Vector2d(pose.position.x, pose.position.y - yI))
+                .build();
+    }
+
+    /**
+     * Move forward (positive X direction) by a specified distance in centimeters.
+     */
+    public static Action up(double x, MecanumDrive drive, Pose2d pose) {
         double xI = MeasurementUnit.cmToInches(x);
         return drive.actionBuilder(pose)
                 .lineToXConstantHeading(pose.position.x + xI)
@@ -23,6 +53,7 @@ public class Movement {
     /**
      * Strafe in any dirrection
      */
+
     public static Action strafe(double x, double y, MecanumDrive drive, Pose2d pose) {
         double xI = MeasurementUnit.cmToInches(x);
         double yI = MeasurementUnit.cmToInches(y);
@@ -31,9 +62,7 @@ public class Movement {
                 .build();
     }
 
-    /**
-     * Spline to linear heading
-     */
+
     public static Action spline(double x, double y, MecanumDrive drive, Pose2d pose, double heading){
         double xI = MeasurementUnit.cmToInches(x);
         double yI = MeasurementUnit.cmToInches(y);

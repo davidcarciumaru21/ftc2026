@@ -83,7 +83,7 @@ public class DriveBaseTeleopPointToPoint extends LinearOpMode {
 
             // Convert current pose into grid coordinates (for pathfinding)
             yNode = 2 * (int) startX - (int) Math.round(currentPose.position.x);
-            xNode = (int) Math.round(currentPose.position.y);
+            xNode = 2 * (int) startY - (int) Math.round(currentPose.position.y);
             currentNode = tableObj.table[yNode][xNode];
 
             // Read circle button press (to trigger path planning)
