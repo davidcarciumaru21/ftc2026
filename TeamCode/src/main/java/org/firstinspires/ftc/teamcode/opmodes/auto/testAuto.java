@@ -38,6 +38,7 @@ public class testAuto extends LinearOpMode {
         );
         driveLocalizer.update();
         Pose2d currentPose = driveLocalizer.getPose();
+        MovementAuto Movement = new MovementAuto(hardwareMap);
 
         // --- Initialize arm and servo systems ---
         ServoAction servo = new ServoAction(hardwareMap);
@@ -48,11 +49,13 @@ public class testAuto extends LinearOpMode {
         Positions.ArmPosition basketPos = Positions.getBasket(); // Position for scoring
         Positions.ArmPosition startPos = Positions.start();      // Initial/resting position
         Positions.ArmPosition submersibil2Pos = Positions.getSubmersibil2();
+        Positions.ArmPosition perimeterUpPos = Positions.getPerimeterUP();
         // --- Movement and mechanism actions ---
 
         Action basket = armAction.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp); // Move arm to scoring position
         Action start = armAction.ArmGoto(startPos.x, startPos.y, startPos.elbowUp);     // Move arm back to start
         Action submersibil2 = armAction.ArmGoto(submersibil2Pos.x, submersibil2Pos.y, submersibil2Pos.elbowUp);
+        Action perimeterUp = armAction.ArmGoto(perimeterUpPos.x, perimeterUpPos.y, perimeterUpPos.elbowUp);
 
         Action servoOut = servo.setPower(1.0);  // Activate servo to eject game element
         Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
@@ -61,169 +64,149 @@ public class testAuto extends LinearOpMode {
         // --- Wait for the start of the match ---
         waitForStart();
 
+        // Punem cel de-al zerolea cub
+
         // --- Drive to target zone using a spline path ---
-        Action splineToDrop = Movement.spline(30, 50, drive, startPose, -50); // Spline path to target area
+        Action splineToDrop = Movement.spline(30, 50, driveLocalizer, -50); // Spline path to target area
         Actions.runBlocking(new ParallelAction(
                 splineToDrop,
                 basket
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
 
-        Action back = Movement.straight(-10, drive, currentPose);
-        Actions.runBlocking(back);
+        Action back = Movement.straight(-10, driveLocalizer);
+        Actions.runBlocking(new SequentialAction(
+                back,
+                servoOut
+        ));
 
-        // --- Run the intake/outtake servo to release the object ---
-        Actions.runBlocking(servoOut);
-        sleep(1000); // Allow 1 second for ejection
+        sleep(  1000); // Allow 1 second for ejection
 
         Actions.runBlocking(servoStop);
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
+        double time1 = getRuntime();
 
+        // First sample(already into intake)
 
-        Action backToPositon = Movement.straight(7, drive, currentPose );
+        Action backToPositon = Movement.straight(6, driveLocalizer);
         Actions.runBlocking(new ParallelAction(
                 backToPositon,
                 submersibil2
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
 
-        Action turnPick = Movement.turnTo(10, drive, currentPose);
+        Action turnPick = Movement.turnTo(6, driveLocalizer, 50, 50);
         Actions.runBlocking(new ParallelAction(
                 turnPick,
                 servoIn
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action smallForwardPick = Movement.straight(2, drive, currentPose);
-        Actions.runBlocking(smallForwardPick);
-
-        sleep(1000);
-
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action turnBack = Movement.turnTo(-50, drive, currentPose);
+        Action turnBack = Movement.turnTo(-50, driveLocalizer);
         Actions.runBlocking(new ParallelAction(
                 turnBack,
                 servoStop
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
+        Actions.runBlocking(basket);
 
-        Action strafeLeft = Movement.strafe(0, 18, drive, currentPose);
-
-        Actions.runBlocking(new ParallelAction(
-                strafeLeft,
-                basket
-        ));
-
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-
-        Action backdrop = Movement.straight(-7, drive, currentPose);
+        Action backdrop = Movement.straight(-5, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 backdrop,
                 servoOut
         ));
 
-        sleep(1000);
+        sleep(500);
 
         Actions.runBlocking(servoStop);
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
+        double time2 = getRuntime();
 
-        Action forwardPick = Movement.straight(7,drive, currentPose);
+        // Al treilea sample
+
+        Action forwardPick = Movement.straight(4, driveLocalizer);
 
         Actions.runBlocking(new ParallelAction(
                 forwardPick,
                 submersibil2
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action turnPick2 = Movement.turnTo(22, drive, currentPose);
+        Action turnPick2 = Movement.turnTo(20, driveLocalizer, 75, 75);
         Actions.runBlocking(new ParallelAction(
                 turnPick2,
                 servoIn
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action forwardPick2 = Movement.straight(3, drive, currentPose);
-        Actions.runBlocking(forwardPick2);
-
-        sleep(1000);
+        double time3 = getRuntime();
 
         Actions.runBlocking(servoStop);
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action backToDrop = Movement.turnTo(-55, drive ,currentPose);
+        Action backToDrop = Movement.turnTo(-45, driveLocalizer);
         Actions.runBlocking(new ParallelAction(
                 backToDrop,
                 basket
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action strafeToDrop = Movement.strafe(0, 9, drive, currentPose);
-        Actions.runBlocking(strafeToDrop);
-
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action backToDrop2 = Movement.straight(-11, drive, currentPose);
+        Action backToDrop2 = Movement.straight(-4, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 backToDrop2,
                 servoOut
         ));
 
-        sleep(1000);
+        sleep(500);
 
         Actions.runBlocking(new SequentialAction(
                 servoStop,
                 submersibil2
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
+        Action forwardPick2 = Movement.straight(13, driveLocalizer);
+        Actions.runBlocking(forwardPick2);
 
-        Action forwardPick3 = Movement.straight(8, drive, currentPose);
-        Actions.runBlocking(forwardPick3);
-
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        Action turnPick3 = Movement.turnTo(32, drive, currentPose);
+        Action turnPick3 = Movement.turnTo(48, driveLocalizer, 75, 75);
         Actions.runBlocking(new ParallelAction(
                 turnPick3,
                 servoIn
         ));
 
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
+        Action turnBack2 = Movement.turnTo(-60, driveLocalizer);
+        Actions.runBlocking(new ParallelAction(
+                servoStop,
+                turnBack2
+        ));
 
-        Action smallForwardPick3 = Movement.straight(3, drive, currentPose);
-        Actions.runBlocking(smallForwardPick3);
+        Actions.runBlocking(basket);
+
+        Action backDrop2 = Movement.straight(-11, driveLocalizer);
+        Actions.runBlocking(new SequentialAction(
+                backDrop2,
+                servoOut
+        ));
+
+        sleep(500);
+
+        Action turnToSubmersible = Movement.turnTo(-90, driveLocalizer);
+        Actions.runBlocking(new ParallelAction(
+                servoStop,
+                turnToSubmersible
+        ));
+
+        Action strafeToSubmersible = Movement.strafe(105, -80, driveLocalizer);
+
+        Actions.runBlocking(new ParallelAction(
+                strafeToSubmersible,
+                perimeterUp
+        ));
+
+        Action backToSubmersible = Movement.straight(-20, driveLocalizer);
+        Actions.runBlocking(backToSubmersible);
+
+        double timeNew = getRuntime();
 
         while(opModeIsActive()){
-            telemetry.addLine("Done!");
-            telemetry.addData("Time: ", getRuntime());
+            telemetry.addData("Time1:", time1);
+            telemetry.addData("Time2:", time2-time1);
+            telemetry.addData("Time3:", time3-time2);
+            telemetry.addData("TimeAll", timeNew);
             telemetry.update();
         }
     }
