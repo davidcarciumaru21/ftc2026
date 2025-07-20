@@ -300,15 +300,16 @@ public final class MecanumDrive {
             Pose2d error = txWorldTarget.value().minusExp(localizer.getPose());
 
             // Keep going after trajectory ends, but only until position and velocity are acceptable
-            if ((error.position.norm() < 1 && robotVelRobot.linearVel.norm() < 0.5)) {
-
-                leftFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
-
-                return false;
+            if (t >= timeTrajectory.duration) {
+                if (error.position.norm() < 1.0 && robotVelRobot.linearVel.norm() < 0.5) {
+                    leftFront.setPower(0);
+                    leftBack.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    return false;
+                }
             }
+
 
 
 

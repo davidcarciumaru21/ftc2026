@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 
-@Autonomous(name = "Auto Test", group = "Test")
-public class testAuto extends LinearOpMode {
+@Autonomous(name = "Auto Basket", group = "Test")
+public class AutoBasket extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -45,6 +45,10 @@ public class testAuto extends LinearOpMode {
         JacobianArm arm = new JacobianArm(hardwareMap);
         ArmAction armAction = new ArmAction(arm);
 
+        // --- Wait for the start of the match ---
+        waitForStart();
+
+
         // --- Predefined arm positions ---
         Positions.ArmPosition basketPos = Positions.getBasket(); // Position for scoring
         Positions.ArmPosition startPos = Positions.start();      // Initial/resting position
@@ -60,9 +64,6 @@ public class testAuto extends LinearOpMode {
         Action servoOut = servo.setPower(1.0);  // Activate servo to eject game element
         Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
         Action servoIn = servo.setPower(-1.0);
-
-        // --- Wait for the start of the match ---
-        waitForStart();
 
         // Punem cel de-al zerolea cub
 
@@ -86,9 +87,9 @@ public class testAuto extends LinearOpMode {
 
         double time1 = getRuntime();
 
-        // First sample(already into intake)
+        // First sample
 
-        Action backToPositon = Movement.straight(6, driveLocalizer);
+        Action backToPositon = Movement.straight(5, driveLocalizer);
         Actions.runBlocking(new ParallelAction(
                 backToPositon,
                 submersibil2
@@ -109,7 +110,7 @@ public class testAuto extends LinearOpMode {
 
         Actions.runBlocking(basket);
 
-        Action backdrop = Movement.straight(-5, driveLocalizer);
+        Action backdrop = Movement.straight(-7, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 backdrop,
                 servoOut
@@ -123,7 +124,7 @@ public class testAuto extends LinearOpMode {
 
         // Al treilea sample
 
-        Action forwardPick = Movement.straight(4, driveLocalizer);
+        Action forwardPick = Movement.straight(5, driveLocalizer);
 
         Actions.runBlocking(new ParallelAction(
                 forwardPick,
@@ -159,7 +160,7 @@ public class testAuto extends LinearOpMode {
                 submersibil2
         ));
 
-        Action forwardPick2 = Movement.straight(13, driveLocalizer);
+        Action forwardPick2 = Movement.straight(14, driveLocalizer);
         Actions.runBlocking(forwardPick2);
 
         Action turnPick3 = Movement.turnTo(48, driveLocalizer, 75, 75);
@@ -190,7 +191,7 @@ public class testAuto extends LinearOpMode {
                 turnToSubmersible
         ));
 
-        Action strafeToSubmersible = Movement.strafe(105, -80, driveLocalizer);
+        Action strafeToSubmersible = Movement.strafe(110, -80, driveLocalizer);
 
         Actions.runBlocking(new ParallelAction(
                 strafeToSubmersible,
