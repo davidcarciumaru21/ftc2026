@@ -301,7 +301,7 @@ public final class MecanumDrive {
 
             // Keep going after trajectory ends, but only until position and velocity are acceptable
             if (t >= timeTrajectory.duration) {
-                if (error.position.norm() < 1.0 && robotVelRobot.linearVel.norm() < 0.5) {
+                if (error.position.norm() < 2.0 && robotVelRobot.linearVel.norm() < 0.5) {
                     leftFront.setPower(0);
                     leftBack.setPower(0);
                     rightBack.setPower(0);

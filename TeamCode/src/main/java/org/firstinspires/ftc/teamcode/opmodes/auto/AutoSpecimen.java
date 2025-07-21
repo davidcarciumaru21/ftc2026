@@ -78,7 +78,7 @@ public class AutoSpecimen extends LinearOpMode {
 
         // Primul specimen(deja pe robot)
 
-        Action stafeToSubmersible1 = Movement.strafe(74, 50, driveLocalizer);
+        Action stafeToSubmersible1 = Movement.strafe(74, 35, driveLocalizer);
 
         Actions.runBlocking(new ParallelAction(
                 stafeToSubmersible1,
@@ -101,57 +101,51 @@ public class AutoSpecimen extends LinearOpMode {
         Action back = Movement.straight(-50, driveLocalizer);
         Actions.runBlocking(back);
 
-        // Al doilea specimen
+        Action resetheading = Movement.turnTo(0, driveLocalizer);
 
-
-
-        Action turnToPick = Movement.turnTo(-69, driveLocalizer);
-        Actions.runBlocking(turnToPick);
-
-        Action striaghtSpecimen2 = Movement.strafe(34, -70, driveLocalizer);
-
+        // Al doilea sample
+        Action strafeToSample1 = Movement.strafe(0, -85, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
-                submersibil2,
-                new ParallelAction(
-                        striaghtSpecimen2,
-                        servoIn
-                )
+                resetheading,
+                strafeToSample1
         ));
 
-        sleep(500);
+        Action straightToSample = Movement.straight(100, driveLocalizer);
+        Actions.runBlocking(straightToSample);
 
-        Actions.runBlocking(servoStop);
+        Action rightToSample = Movement.strafe(0, -20, driveLocalizer);
+        Actions.runBlocking(rightToSample);
 
-        Action returnToDrop = Movement.spline(-30, 0, driveLocalizer, -135);
-        Actions.runBlocking(new SequentialAction(
-                returnToDrop,
-                servoOut
-        ));
+        Action downToBase = Movement.straight(-110, driveLocalizer);
+        Actions.runBlocking(downToBase);
 
-        sleep(500);
+        // Al treilea sample
 
-        Actions.runBlocking(servoStop);
+        Action straightToSample2 = Movement.straight(110, driveLocalizer);
+        Actions.runBlocking(straightToSample2);
 
+        Action rightToSample2 = Movement.strafe(0, -20, driveLocalizer);
+        Actions.runBlocking(rightToSample2);
 
-        Action turnBackToPick1 = Movement.turnTo(-45, driveLocalizer);
-        Actions.runBlocking(turnBackToPick1);
+        Action downToBase2 = Movement.straight(-110, driveLocalizer);
+        Actions.runBlocking(downToBase2);
 
-        Action forwardToPick1 = Movement.strafe(27, -32, driveLocalizer);
+        //Al patrulea sample
+
+        Action straightToSample3 = Movement.straight(110, driveLocalizer);
+        Actions.runBlocking(straightToSample3);
+
+        Action rightToSample3 = Movement.strafe(0, -20, driveLocalizer);
+        Actions.runBlocking(rightToSample3);
+
+        Action downToBase3 = Movement.straight(-110, driveLocalizer);
+        Actions.runBlocking(downToBase3);
+
+        Action forwardOutOfBase = Movement.straight(20, driveLocalizer);
         Actions.runBlocking(new ParallelAction(
-                forwardToPick1,
-                servoIn
+                forwardOutOfBase,
+                start
         ));
 
-        /*
-
-        sleep(500);
-
-        Action turnToDrop2 = Movement.spline(-30, 0, driveLocalizer, -135);
-        Actions.runBlocking(new SequentialAction(
-                servoStop,
-                turnToDrop2
-        ));
-
-         */
     }
 }
