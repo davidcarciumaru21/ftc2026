@@ -17,8 +17,8 @@ public class Positions {
     public static double specimenUpX = 15.8d;
     public static double specimenUpY = 64.0d;
     public static boolean specimenUpElbowUp = true;
-    public static double specimenDownX = 19.85d;
-    public static double specimenDownY = 54.62d;
+    public static double specimenDownX = 20.85d;
+    public static double specimenDownY = 48.62d;
     public static boolean specimenDownElbowUp = true;
     public static double perimeterX = 43.0d;
     public static double perimeterY = 26.0d;

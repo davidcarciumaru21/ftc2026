@@ -78,7 +78,7 @@ public class AutoSpecimen extends LinearOpMode {
 
         // Primul specimen(deja pe robot)
 
-        Action stafeToSubmersible1 = Movement.strafe(74, 45, driveLocalizer);
+        Action stafeToSubmersible1 = Movement.strafe(74, 50, driveLocalizer);
 
         Actions.runBlocking(new ParallelAction(
                 stafeToSubmersible1,
@@ -86,34 +86,72 @@ public class AutoSpecimen extends LinearOpMode {
         ));
 
 
-        robot.backLeftMotor.setPower(1);
-        robot.frontLeftMotor.setPower(1);
-        robot.backRightMotor.setPower(1);
-        robot.frontRightMotor.setPower(1);
+        while (!TSL.isPressed() && !TSR.isPressed()) {
+            robot.backLeftMotor.setPower(0.5);
+            robot.frontLeftMotor.setPower(0.5);
+            robot.backRightMotor.setPower(0.5);
+            robot.frontRightMotor.setPower(0.5);
+        }
 
-        Action back = Movement.straight(-30, driveLocalizer);
-        Actions.runBlocking(new SequentialAction(
-                specimenDown,
-                back
-        ));
 
-        robot.backLeftMotor.setPower(0);
-        robot.frontLeftMotor.setPower(0);
-        robot.backRightMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
+        Actions.runBlocking(specimenDown);
+
+        sleep(500);
+
+        Action back = Movement.straight(-50, driveLocalizer);
+        Actions.runBlocking(back);
 
         // Al doilea specimen
 
-        Action turnToPick = Movement.turnTo(-81, driveLocalizer);
+
+
+        Action turnToPick = Movement.turnTo(-69, driveLocalizer);
         Actions.runBlocking(turnToPick);
 
+        Action striaghtSpecimen2 = Movement.strafe(34, -70, driveLocalizer);
 
-        Action forwardToPick = Movement.straight(30, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 submersibil2,
                 new ParallelAction(
-                        servoIn,
-                        forwardToPick
-                )));
+                        striaghtSpecimen2,
+                        servoIn
+                )
+        ));
+
+        sleep(500);
+
+        Actions.runBlocking(servoStop);
+
+        Action returnToDrop = Movement.spline(-30, 0, driveLocalizer, -135);
+        Actions.runBlocking(new SequentialAction(
+                returnToDrop,
+                servoOut
+        ));
+
+        sleep(500);
+
+        Actions.runBlocking(servoStop);
+
+
+        Action turnBackToPick1 = Movement.turnTo(-45, driveLocalizer);
+        Actions.runBlocking(turnBackToPick1);
+
+        Action forwardToPick1 = Movement.strafe(27, -32, driveLocalizer);
+        Actions.runBlocking(new ParallelAction(
+                forwardToPick1,
+                servoIn
+        ));
+
+        /*
+
+        sleep(500);
+
+        Action turnToDrop2 = Movement.spline(-30, 0, driveLocalizer, -135);
+        Actions.runBlocking(new SequentialAction(
+                servoStop,
+                turnToDrop2
+        ));
+
+         */
     }
 }
