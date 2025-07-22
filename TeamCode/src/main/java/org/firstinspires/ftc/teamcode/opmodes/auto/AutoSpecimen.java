@@ -7,16 +7,15 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.Utils.MeasurementUnit;
+import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
-import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.MecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @Autonomous(group = "Test", name = "Auto Specimen")

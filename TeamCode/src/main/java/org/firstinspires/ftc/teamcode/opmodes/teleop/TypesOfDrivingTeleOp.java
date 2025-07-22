@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
+import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
-import org.firstinspires.ftc.teamcode.systems.gamepad.Gamepads;
+import org.firstinspires.ftc.teamcode.utils.Gamepads;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
 public class TypesOfDrivingTeleOp extends LinearOpMode {

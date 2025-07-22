@@ -8,7 +8,6 @@ import android.graphics.Color;
 import static org.firstinspires.ftc.teamcode.enums.AllianceColor.*;
 
 import org.firstinspires.ftc.teamcode.enums.AllianceColor;
-import org.firstinspires.ftc.teamcode.configs.ColorConfig;
 
 public class SampleDetection {
 

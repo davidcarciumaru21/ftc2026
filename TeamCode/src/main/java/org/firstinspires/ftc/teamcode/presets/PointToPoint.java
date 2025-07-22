@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -299,28 +299,28 @@ public class PointToPoint {
             // Map movement function name to the corresponding Movement method
             switch (funcName) {
                 case "right":
-                    action = Movement.right(length, drive, currentPose);
+                    action = MovementPointToPoint.right(length, drive, currentPose);
                     break;
                 case "right-down":
-                    action = Movement.rightDown(length, drive, currentPose);
+                    action = MovementPointToPoint.rightDown(length, drive, currentPose);
                     break;
                 case "down":
-                    action = Movement.down(length, drive, currentPose);
+                    action = MovementPointToPoint.down(length, drive, currentPose);
                     break;
                 case "left-down":
-                    action = Movement.leftDown(length, drive, currentPose);
+                    action = MovementPointToPoint.leftDown(length, drive, currentPose);
                     break;
                 case "left":
-                    action = Movement.left(length, drive, currentPose);
+                    action = MovementPointToPoint.left(length, drive, currentPose);
                     break;
                 case "left-up":
-                    action = Movement.leftUp(length, drive, currentPose);
+                    action = MovementPointToPoint.leftUp(length, drive, currentPose);
                     break;
                 case "up":
-                    action = Movement.up(length, drive, currentPose);
+                    action = MovementPointToPoint.up(length, drive, currentPose);
                     break;
                 case "right-up":
-                    action = Movement.rightUp(length, drive, currentPose);
+                    action = MovementPointToPoint.rightUp(length, drive, currentPose);
                     break;
                 default:
                     System.out.println("Unknown movement function: " + funcName);

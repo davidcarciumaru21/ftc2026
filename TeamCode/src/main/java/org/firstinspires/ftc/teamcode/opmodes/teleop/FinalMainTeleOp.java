@@ -9,11 +9,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
+import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.enums.DriveType;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
-import org.firstinspires.ftc.teamcode.systems.gamepad.Gamepads;
+import org.firstinspires.ftc.teamcode.utils.Gamepads;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 
