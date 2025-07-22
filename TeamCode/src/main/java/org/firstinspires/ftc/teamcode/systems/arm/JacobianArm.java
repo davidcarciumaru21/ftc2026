@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.configs.ArmConfig;
+
 import kotlin.Pair;
 import kotlin.jvm.internal.Intrinsics;
 

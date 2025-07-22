@@ -5,13 +5,16 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import android.graphics.Color;
 
-import static org.firstinspires.ftc.teamcode.systems.colorSensor.colorConfig.AllianceColor.*;
+import static org.firstinspires.ftc.teamcode.enums.AllianceColor.*;
 
-public class sampleDetection {
+import org.firstinspires.ftc.teamcode.enums.AllianceColor;
+import org.firstinspires.ftc.teamcode.configs.ColorConfig;
+
+public class SampleDetection {
 
     private final NormalizedColorSensor colorSensor;
 
-    public sampleDetection(HardwareMap hardwareMap) {
+    public SampleDetection(HardwareMap hardwareMap) {
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "CSS");
 
         if (colorSensor instanceof SwitchableLight) {
@@ -23,7 +26,7 @@ public class sampleDetection {
         float[] hsv = new float[3];
         Color.colorToHSV(colorSensor.getNormalizedColors().toColor(), hsv);
 
-        colorConfig.AllianceColor alliance = colorConfig.alliance;
+        AllianceColor alliance = ColorConfig.alliance;
 
         // RED alliance: detect RED or YELLOW samples
         if (alliance == RED) {

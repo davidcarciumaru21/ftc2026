@@ -17,4 +17,11 @@ public class Gamepads {
                 .build();
         gamepad.runRumbleEffect(effect);
     }
+
+    public static void wrongSampleTypeRumble(Gamepad gamepad) {
+        Gamepad.RumbleEffect effect = new Gamepad.RumbleEffect.Builder()
+                .addStep(1.0, 1.0, 100)
+                .build();
+        gamepad.runRumbleEffect(effect);
+    }
 }

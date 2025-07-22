@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Utils.MeasurementUnit;
-import org.firstinspires.ftc.teamcode.Utils.Telemetry;
 import org.firstinspires.ftc.teamcode.presets.Node;
 import org.firstinspires.ftc.teamcode.presets.Table;
 import org.firstinspires.ftc.teamcode.presets.Robot;
@@ -20,15 +19,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
-import org.firstinspires.ftc.teamcode.systems.gamepad.Gamepads;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.MecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectories.roadRunnerConfigurations.ThreeDeadWheelLocalizer;
 
 import java.util.List;
 
-@TeleOp(name = "Main-TeleOp", group = "Use")
-public class mainTeleOp extends LinearOpMode {
+@TeleOp(name = "Main-TeleOp", group = "Dev-Teleops")
+public class MainTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -127,7 +125,6 @@ public class mainTeleOp extends LinearOpMode {
             // Read circle button press (to trigger path planning)
             currentBState = gamepad1.circle;
 
-            /*
             // Detect rising edge of button press to start autonomous move
             if (currentBState && !lastBState) {
                 buzy = true; // Disable manual control while robot is moving
@@ -167,7 +164,6 @@ public class mainTeleOp extends LinearOpMode {
 
                 buzy = false; // Re-enable manual control
             }
-            */
 
             // Manual driving (if not currently executing a path)
             if (!buzy) {

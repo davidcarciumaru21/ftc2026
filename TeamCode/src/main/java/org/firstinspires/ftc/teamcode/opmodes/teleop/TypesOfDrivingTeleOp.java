@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import org.firstinspires.ftc.teamcode.Utils.Telemetry;
+import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.systems.gamepad.Gamepads;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
-public class typesOfDriving extends LinearOpMode {
+public class TypesOfDrivingTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -194,8 +194,8 @@ public class typesOfDriving extends LinearOpMode {
             robotHardware.backRightMotor.setPower(backRightPower);
 
             // === Display telemetry for debugging and monitoring ===
-            Telemetry.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
-            Telemetry.displayCodeVersion(telemetry, "7.15.25.5.51");
+            TelemetryMethods.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
+            TelemetryMethods.displayCodeVersion(telemetry, "7.15.25.5.51");
             telemetry.update();
         }
     }

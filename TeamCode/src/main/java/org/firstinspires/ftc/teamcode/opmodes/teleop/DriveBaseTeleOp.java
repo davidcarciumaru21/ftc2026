@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Utils.Telemetry;
+import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 
 @TeleOp(name = "DriveBase-TeleOp", group = "Dev-Teleops")
-public class DriveBaseTeleop extends LinearOpMode {
+public class DriveBaseTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -47,10 +47,10 @@ public class DriveBaseTeleop extends LinearOpMode {
             robot.backRightMotor.setPower(backRightPower);
 
             // Display motor power values on telemetry for debugging
-            Telemetry.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
+            TelemetryMethods.displayMotorPowers(telemetry, frontLeftPower, backLeftPower, frontRightPower, backRightPower);
 
             // Display version tag (for tracking builds or testing releases)
-            Telemetry.displayCodeVersion(telemetry, "7.5.25.17.29");
+            TelemetryMethods.displayCodeVersion(telemetry, "7.5.25.17.29");
 
             // Push telemetry to driver station
             telemetry.update();
