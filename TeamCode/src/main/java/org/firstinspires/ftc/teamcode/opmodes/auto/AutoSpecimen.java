@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @Autonomous(group = "Test", name = "Auto Specimen")
 public class AutoSpecimen extends LinearOpMode {
+
     @Override
     public void runOpMode() throws InterruptedException {
         // --- Initial robot pose (0 cm, 0 cm, 0° heading) ---
@@ -58,7 +59,7 @@ public class AutoSpecimen extends LinearOpMode {
         robot.init(hardwareMap, (byte) 2);
 
         Positions.ArmPosition perimeterUpPos = Positions.getPerimeterUP();
-        Positions.ArmPosition specimenDownPos = Positions.getSpecimenDown();
+        Positions.ArmPosition specimenDownPos = Positions.getSpecimenDownAuto();
         Positions.ArmPosition startPos = Positions.start();
         Positions.ArmPosition specimenUpPos = Positions.getSpecimenUp();
         Positions.ArmPosition perimeterPos = Positions.getPerimeter();
@@ -110,42 +111,75 @@ public class AutoSpecimen extends LinearOpMode {
                 strafeToSample1
         ));
 
+        resetheading = Movement.turnTo(0, driveLocalizer);
         Action straightToSample = Movement.straight(100, driveLocalizer);
-        Actions.runBlocking(straightToSample);
-
-        Action rightToSample = Movement.strafe(0, -20, driveLocalizer);
-        Actions.runBlocking(rightToSample);
-
-        Action downToBase = Movement.straight(-110, driveLocalizer);
-        Actions.runBlocking(downToBase);
-
-        // Al treilea sample
-
-        Action straightToSample2 = Movement.straight(110, driveLocalizer);
-        Actions.runBlocking(straightToSample2);
-
-        Action rightToSample2 = Movement.strafe(0, -20, driveLocalizer);
-        Actions.runBlocking(rightToSample2);
-
-        Action downToBase2 = Movement.straight(-110, driveLocalizer);
-        Actions.runBlocking(downToBase2);
-
-        //Al patrulea sample
-
-        Action straightToSample3 = Movement.straight(110, driveLocalizer);
-        Actions.runBlocking(straightToSample3);
-
-        Action rightToSample3 = Movement.strafe(0, -20, driveLocalizer);
-        Actions.runBlocking(rightToSample3);
-
-        Action downToBase3 = Movement.straight(-110, driveLocalizer);
-        Actions.runBlocking(downToBase3);
-
-        Action forwardOutOfBase = Movement.straight(20, driveLocalizer);
-        Actions.runBlocking(new ParallelAction(
-                forwardOutOfBase,
-                start
+        Actions.runBlocking(new SequentialAction(
+                resetheading,
+                straightToSample
         ));
 
+        Action rightToSample = Movement.strafe(0, -25, driveLocalizer);
+        Actions.runBlocking(rightToSample);
+
+        resetheading = Movement.turnTo(0, driveLocalizer);
+        Action downToBase = Movement.straight(-110, driveLocalizer);
+        Actions.runBlocking(new SequentialAction(
+                resetheading,
+                downToBase
+        ));
+
+        Action exitBase = Movement.straight(20, driveLocalizer, 50, 50);
+        Actions.runBlocking(exitBase);
+        Action reverseToSpecimen = Movement.turnTo(180, driveLocalizer);
+        Actions.runBlocking(new ParallelAction(
+                reverseToSpecimen,
+                perimeter
+        ));
+        driveLocalizer.update();
+        currentPose = driveLocalizer.getPose();
+
+        double headingError = 180 - Math.toDegrees(currentPose.heading.toDouble());
+        if(headingError > 0 && headingError < 10) {
+            Action turnAction = Movement.turn(headingError + 2, driveLocalizer, 30, 30);
+            Actions.runBlocking(turnAction);
+        }
+
+
+        while (!TSL.isPressed() && !TSR.isPressed()) {
+            robot.backLeftMotor.setPower(0.5);
+            robot.frontLeftMotor.setPower(0.5);
+            robot.backRightMotor.setPower(0.5);
+            robot.frontRightMotor.setPower(0.5);
+        }
+
+        sleep(500);
+
+        Actions.runBlocking(perimeterUp);
+
+        Action backOut = Movement.straight(50, driveLocalizer);
+        Actions.runBlocking(backOut);
+
+        Action splineToSubmersible = Movement.spline(0.0, 125.0, driveLocalizer,0);
+        Actions.runBlocking(new ParallelAction(
+                splineToSubmersible,
+                specimenUp
+        ));
+
+        sleep(500);
+
+        while (!TSL.isPressed() && !TSR.isPressed()) {
+            robot.backLeftMotor.setPower(0.4);
+            robot.frontLeftMotor.setPower(0.4);
+            robot.backRightMotor.setPower(0.4);
+            robot.frontRightMotor.setPower(0.4);
+        }
+
+        Actions.runBlocking(specimenDown);
+
+        Action backToBase = Movement.strafe(-50, -140, driveLocalizer);
+        Actions.runBlocking(new SequentialAction(
+                backToBase,
+                start
+        ));
     }
 }

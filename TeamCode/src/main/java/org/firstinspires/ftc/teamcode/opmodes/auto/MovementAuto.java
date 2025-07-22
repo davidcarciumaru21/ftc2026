@@ -21,6 +21,8 @@ public class MovementAuto {
     public Action straight(double x, ThreeDeadWheelLocalizer localizer) {
         localizer.update();
         Pose2d pose = localizer.getPose();
+        MecanumDrive.PARAMS.maxWheelVel = 50;
+        MecanumDrive.PARAMS.maxProfileAccel = 50;
         double xI = MeasurementUnit.cmToInches(x);
         MecanumDrive drive = new MecanumDrive(this.hardwareMap, pose);
         return drive.actionBuilder(pose)
@@ -28,8 +30,12 @@ public class MovementAuto {
                 .build();
     }
 
-    public Action straight(double x, ThreeDeadWheelLocalizer localizer, Pose2d pose) {
+    public Action straight(double x, ThreeDeadWheelLocalizer localizer, double vel, double accel) {
         double xI = MeasurementUnit.cmToInches(x);
+        MecanumDrive.PARAMS.maxWheelVel = vel;
+        MecanumDrive.PARAMS.maxProfileAccel = accel;
+        localizer.update();
+        Pose2d pose = localizer.getPose();
         MecanumDrive drive = new MecanumDrive(this.hardwareMap, pose);
         return drive.actionBuilder(pose)
                 .lineToXConstantHeading(pose.position.x + xI)

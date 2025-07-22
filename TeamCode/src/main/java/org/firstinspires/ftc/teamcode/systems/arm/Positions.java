@@ -8,8 +8,8 @@ public class Positions {
     public static double basketX = -11.91d;
     public static double basketY = 88.67d;
     public static boolean basketElbowUp = true;
-    public static double submersibil1X = 87.97d;
-    public static double submersibil1Y = -20.18d;
+    public static double submersibil1X = 90.00d;
+    public static double submersibil1Y = -15.18d;
     public static boolean submersibil1ElbowUp = true;
     public static double submersibil2X = 85.31d;
     public static double submersibil2Y = -36.63d;
@@ -18,16 +18,18 @@ public class Positions {
     public static double specimenUpY = 64.0d;
     public static boolean specimenUpElbowUp = true;
     public static double specimenDownX = 20.85d;
-    public static double specimenDownY = 48.62d;
+    public static double specimenDownY = 54.62d;
+    public static double specimenDownXAuto = 20.85d;
+    public static double specimenDownYAuto = 50.62d;
     public static boolean specimenDownElbowUp = true;
     public static double perimeterX = 43.0d;
-    public static double perimeterY = 26.0d;
+    public static double perimeterY = 30.0d;
     public static boolean perimeterElbowUp = true;
     public static double startX = -1.37d;
     public static double startY = 8.9d;
     public static boolean startElbowUp = true;
     public static double perimeterUPX = 43.0d;
-    public static double perimeterUPY = 30.0d;
+    public static double perimeterUPY = 34.0d;
     public static boolean perimeterUPElbowUp = true;
     public static double basket3X = 79.84d;
     public static double basket3Y = -33.27d;
@@ -59,6 +61,10 @@ public class Positions {
 
     public static ArmPosition getSpecimenDown() {
         return new ArmPosition(specimenDownX, specimenDownY, specimenDownElbowUp);
+    }
+
+    public static ArmPosition getSpecimenDownAuto() {
+        return new ArmPosition(specimenDownXAuto, specimenDownYAuto, specimenDownElbowUp);
     }
 
     public static ArmPosition getPerimeter() {

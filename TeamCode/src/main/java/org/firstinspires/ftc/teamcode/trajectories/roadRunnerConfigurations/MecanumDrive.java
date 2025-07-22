@@ -299,9 +299,12 @@ public final class MecanumDrive {
 
             Pose2d error = txWorldTarget.value().minusExp(localizer.getPose());
 
-            // Keep going after trajectory ends, but only until position and velocity are acceptable
+            // heading error in radians
+
+
             if (t >= timeTrajectory.duration) {
-                if (error.position.norm() < 2.0 && robotVelRobot.linearVel.norm() < 0.5) {
+                if (error.position.norm() < 2.0 &&
+                        robotVelRobot.linearVel.norm() < 0.5) {  // 3 degrees tolerance
                     leftFront.setPower(0);
                     leftBack.setPower(0);
                     rightBack.setPower(0);
@@ -309,9 +312,6 @@ public final class MecanumDrive {
                     return false;
                 }
             }
-
-
-
 
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
@@ -345,7 +345,7 @@ public final class MecanumDrive {
 
             p.put("xError", error.position.x);
             p.put("yError", error.position.y);
-            p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
+                p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
 
             // only draw when active; only one drive action should be active at a time
             Canvas c = p.fieldOverlay();
@@ -390,8 +390,11 @@ public final class MecanumDrive {
             } else {
                 t = Actions.now() - beginTs;
             }
+            Pose2dDual<Time> txWorldTarget = turn.get(t);
+            Pose2d error = txWorldTarget.value().minusExp(localizer.getPose());
+            double headingError = error.heading.toDouble();
 
-            if (t >= turn.duration) {
+            if (t >= turn.duration && Math.abs(headingError) < 0.6) {
                 leftFront.setPower(0);
                 leftBack.setPower(0);
                 rightBack.setPower(0);
@@ -400,7 +403,7 @@ public final class MecanumDrive {
                 return false;
             }
 
-            Pose2dDual<Time> txWorldTarget = turn.get(t);
+
             targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
 
             PoseVelocity2d robotVelRobot = updatePoseEstimate();

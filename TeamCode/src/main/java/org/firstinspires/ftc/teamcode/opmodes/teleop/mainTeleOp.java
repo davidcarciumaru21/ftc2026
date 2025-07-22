@@ -34,13 +34,13 @@ public class mainTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // Create a 40x40 grid map
-        Table tableObj = new Table(40, 40, 1);
+        Table tableObj = new Table(144, 144, 1);
 
         // Define the robot with specific dimensions (converted from cm to inches)
-        Robot robotPoinToPoint = new Robot((int) MeasurementUnit.cmToInches(35.0), (int) MeasurementUnit.cmToInches(43.0));
+        Robot robotPoinToPoint = new Robot((int) MeasurementUnit.cmToInches(43.0), (int) MeasurementUnit.cmToInches(45.0));
 
         // Set robot's starting pose
-        double startX = robotPoinToPoint.height / 2, startY = robotPoinToPoint.width / 2;
+        double startX = tableObj.columns - robotPoinToPoint.height / 2.0, startY = tableObj.rows - robotPoinToPoint.width / 2.0;
         double startHeading = Math.toDegrees(0);  // Facing forward
         Pose2d startPose = new Pose2d(startX, startY, startHeading);
 
@@ -124,19 +124,20 @@ public class mainTeleOp extends LinearOpMode {
             driveLocalizer.update();
             Pose2d currentPose = driveLocalizer.getPose();
 
-            // Convert current pose into grid coordinates (for pathfinding)
-            yNode = 2 * (int) startX - (int) Math.round(currentPose.position.x);
-            xNode = (int) Math.round(currentPose.position.y);
-            currentNode = tableObj.table[yNode][xNode];
-
             // Read circle button press (to trigger path planning)
             currentBState = gamepad1.circle;
 
+            /*
             // Detect rising edge of button press to start autonomous move
             if (currentBState && !lastBState) {
                 buzy = true; // Disable manual control while robot is moving
 
                 try {
+                    // Convert current pose into grid coordinates (for pathfinding)
+                    yNode = 2 * (int) startX - (int) Math.round(currentPose.position.x);
+                    xNode = (int) Math.round(currentPose.position.y);
+                    currentNode = tableObj.table[yNode][xNode];
+
                     // Mark start and end for pathfinding
                     currentNode.isStart = true;
                     endNode.isEnd = true;
@@ -166,6 +167,7 @@ public class mainTeleOp extends LinearOpMode {
 
                 buzy = false; // Re-enable manual control
             }
+            */
 
             // Manual driving (if not currently executing a path)
             if (!buzy) {
@@ -174,14 +176,12 @@ public class mainTeleOp extends LinearOpMode {
                 coefYGamepad1 = 1.0;
                 coefRxGamepad1 = 1.0;
 
-                if (gamepad1.right_bumper) {
+                if (gamepad1.right_trigger > 0.1) {
                     // 50% speed mode
-                    Gamepads.rightBumperRumble(gamepad1);
                     coefXGamepad1 = 0.5;
                     coefYGamepad1 = 0.5;
                     coefRxGamepad1 = 0.5;
-                } else if (gamepad1.left_bumper) {
-                    Gamepads.leftBumperRumble(gamepad1);
+                } else if (gamepad1.left_trigger > 0.1) {
                     // 25% precision mode
                     coefXGamepad1 = 0.25;
                     coefYGamepad1 = 0.25;
@@ -193,13 +193,11 @@ public class mainTeleOp extends LinearOpMode {
                 coefYGamepad2 = 1.0;
                 coefRxGamepad2 = 1.0;
 
-                if (gamepad2.right_bumper) {
-                    Gamepads.rightBumperRumble(gamepad2);
+                if (gamepad2.right_trigger > 0.1) {
                     coefXGamepad2 = 0.5;
                     coefYGamepad2 = 0.5;
                     coefRxGamepad2 = 0.5;
-                } else if (gamepad2.left_bumper) {
-                    Gamepads.leftBumperRumble(gamepad2);
+                } else if (gamepad2.left_trigger > 0.1) {
                     coefXGamepad2 = 0.25;
                     coefYGamepad2 = 0.25;
                     coefRxGamepad2 = 0.25;
@@ -234,9 +232,9 @@ public class mainTeleOp extends LinearOpMode {
 
                 if (gamepad2Active) {
                     // === Gamepad2 controls drive ===
-                    x = -gamepad2.left_stick_x * coefXGamepad2;
-                    y = gamepad2.left_stick_y * coefYGamepad2;
-                    rx = -gamepad2.right_stick_x * coefRxGamepad2;
+                    x = gamepad2.left_stick_x * coefXGamepad2;
+                    y = -gamepad2.left_stick_y * coefYGamepad2;
+                    rx = gamepad2.right_stick_x * coefRxGamepad2;
 
                     if (driveModeGamepad2 == 1) {
                         // Standard (robot-centric) driving
@@ -260,9 +258,9 @@ public class mainTeleOp extends LinearOpMode {
                     }
                 } else {
                     // === Gamepad1 takes over if Gamepad2 is idle ===
-                    x = -gamepad1.left_stick_x * coefXGamepad1;
-                    y = gamepad1.left_stick_y * coefYGamepad1;
-                    rx = -gamepad1.right_stick_x * coefRxGamepad1;
+                    x = gamepad1.left_stick_x * coefXGamepad1;
+                    y = -gamepad1.left_stick_y * coefYGamepad1;
+                    rx = gamepad1.right_stick_x * coefRxGamepad1;
 
                     if (driveModeGamepad1 == 1) {
                         // Robot-centric
