@@ -10,7 +10,14 @@ import static org.firstinspires.ftc.teamcode.enums.AllianceColor.*;
 import org.firstinspires.ftc.teamcode.enums.AllianceColor;
 
 public class SampleDetection {
+    int redHsv1 = ColorConfig.redHsvValue1;
+    int redHsv2 = ColorConfig.redHsvValue2;
 
+    int yellowHsv1 = ColorConfig.yellowHsvValue1;
+    int yellowHsv2 = ColorConfig.yellowHsvValue2;
+
+    int blueHsv1 = ColorConfig.blueHsvValue1;
+    int blueHsv2 = ColorConfig.blueHsvValue2;
     private final NormalizedColorSensor colorSensor;
 
     public SampleDetection(HardwareMap hardwareMap) {
@@ -27,6 +34,8 @@ public class SampleDetection {
 
         AllianceColor alliance = ColorConfig.alliance;
 
+
+
         // RED alliance: detect RED or YELLOW samples
         if (alliance == RED) {
             return isRed(hsv) || isYellow(hsv);
@@ -37,14 +46,14 @@ public class SampleDetection {
     }
 
     private boolean isRed(float[] hsv) {
-        return hsv[0] >= 0 && hsv[0] <= 30;
+        return hsv[0] >= redHsv1 && hsv[0] <= redHsv2;
     }
 
     private boolean isBlue(float[] hsv) {
-        return hsv[0] >= 210 && hsv[0] <= 270;
+        return hsv[0] >= blueHsv1 && hsv[0] <= blueHsv2;
     }
 
     private boolean isYellow(float[] hsv) {
-        return hsv[0] >= 30 && hsv[0] <= 70;
+        return hsv[0] >= yellowHsv1 && hsv[0] <= yellowHsv2;
     }
 }
