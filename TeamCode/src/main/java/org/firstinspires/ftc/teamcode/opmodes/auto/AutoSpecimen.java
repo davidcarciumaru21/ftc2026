@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(group = "Test", name = "Auto Specimen")
+@Autonomous(group = "Auto", name = "Auto Specimen")
 public class AutoSpecimen extends LinearOpMode {
 
     @Override

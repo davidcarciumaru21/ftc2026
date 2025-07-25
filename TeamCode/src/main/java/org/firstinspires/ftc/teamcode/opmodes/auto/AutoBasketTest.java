@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 // FTC and Road Runner imports
+import android.graphics.Color;
+
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -17,9 +19,11 @@ import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorAction;
 
-@Autonomous(name = "Auto Basket", group = "Auto")
-public class AutoBasket extends LinearOpMode {
+@Autonomous(name = "Auto Basket test", group = "Test")
+public class AutoBasketTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,6 +48,8 @@ public class AutoBasket extends LinearOpMode {
         ServoAction servo = new ServoAction(hardwareMap);
         JacobianArm arm = new JacobianArm(hardwareMap);
         ArmAction armAction = new ArmAction(arm);
+        SampleDetection SampleD = new SampleDetection(hardwareMap);
+        ColorAction color = new ColorAction(SampleD, servo);
 
         // --- Wait for the start of the match ---
         waitForStart();
@@ -61,9 +67,11 @@ public class AutoBasket extends LinearOpMode {
         Action submersibil2 = armAction.ArmGoto(submersibil2Pos.x, submersibil2Pos.y, submersibil2Pos.elbowUp);
         Action perimeterUp = armAction.ArmGoto(perimeterUpPos.x, perimeterUpPos.y, perimeterUpPos.elbowUp);
 
-        Action servoOut = servo.setPower(1.0);  // Activate servo to eject game element
+        Action servoOut = servo.setPower(1.0);  // Activate servo to take game element
         Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
-        Action servoIn = servo.setPower(-1.0);
+        Action servoIn = servo.setPower(-1.0); // Activate servo to eject game element
+
+        Action servoUntilDropped = color.goUntilSampleDropped(5);
 
         // Punem cel de-al zerolea cub
 
@@ -78,10 +86,8 @@ public class AutoBasket extends LinearOpMode {
         Action back = Movement.straight(-10, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 back,
-                servoOut
+                servoUntilDropped
         ));
-
-        sleep(  1000); // Allow 1 second for ejection
 
         Actions.runBlocking(servoStop);
 
@@ -113,10 +119,9 @@ public class AutoBasket extends LinearOpMode {
         Action backdrop = Movement.straight(-7, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 backdrop,
-                servoOut
+                servoUntilDropped
         ));
 
-        sleep(500);
 
         Actions.runBlocking(servoStop);
 
@@ -150,10 +155,8 @@ public class AutoBasket extends LinearOpMode {
         Action backToDrop2 = Movement.straight(-4, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 backToDrop2,
-                servoOut
+                servoUntilDropped
         ));
-
-        sleep(500);
 
         Actions.runBlocking(new SequentialAction(
                 servoStop,
@@ -180,10 +183,8 @@ public class AutoBasket extends LinearOpMode {
         Action backDrop2 = Movement.straight(-11, driveLocalizer);
         Actions.runBlocking(new SequentialAction(
                 backDrop2,
-                servoOut
+                servoUntilDropped
         ));
-
-        sleep(500);
 
         Action turnToSubmersible = Movement.turnTo(-90, driveLocalizer);
         Actions.runBlocking(new ParallelAction(
