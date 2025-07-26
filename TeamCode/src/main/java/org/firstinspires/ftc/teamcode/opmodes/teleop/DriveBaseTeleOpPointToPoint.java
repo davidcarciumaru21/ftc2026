@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import static org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive.PARAMS;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.presets.Node;
 import org.firstinspires.ftc.teamcode.presets.Table;
@@ -20,6 +22,7 @@ import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocaliz
 import java.util.List;
 
 @TeleOp(name = "DriveBase-TeleOpPointToPoint", group = "Dev-Teleops")
+@Disabled
 public class DriveBaseTeleOpPointToPoint extends LinearOpMode {
 
     @Override
@@ -51,7 +54,7 @@ public class DriveBaseTeleOpPointToPoint extends LinearOpMode {
 
         // Create and initialize hardware (motors, etc.)
         final Hardware robotHardware = new Hardware();
-        robotHardware.init(hardwareMap, (byte) 2);
+        robotHardware.init(hardwareMap, RobotInitialization.WithRoadRunner);
 
         // Control sensitivity coefficients
         double coefX = 1.1;

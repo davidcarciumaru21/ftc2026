@@ -7,17 +7,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorConfig;
 import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
-import org.firstinspires.ftc.teamcode.enums.DriveType;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.utils.Gamepads;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 
-@TeleOp(name = "Main-TeleOp", group = "Use")
+import org.firstinspires.ftc.teamcode.enums.DriveType;
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+
+@TeleOp(name = "FinalMain-TeleOp", group = "Use")
 public class FinalMainTeleOp extends LinearOpMode {
 
     @Override
@@ -58,7 +62,7 @@ public class FinalMainTeleOp extends LinearOpMode {
 
         //===================Drivebase initialization==================
         final Hardware robotHardware = new Hardware();
-        robotHardware.init(hardwareMap, (byte) 1); // (1)-When not using Road Runner; (2)-When using Road Runner.
+        robotHardware.init(hardwareMap, RobotInitialization.WithoutRoadRunner); // (1)-When not using Road Runner; (2)-When using Road Runner.
 
         //=====================IMU initialization======================
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -152,9 +156,9 @@ public class FinalMainTeleOp extends LinearOpMode {
 
             if (gamepad2Active) {
                 //======================Gamepad2 drivebase======================
-                x = gamepad2.left_stick_x * coefXGamepad2;
-                y = -gamepad2.left_stick_y * coefYGamepad2;
-                rx = gamepad2.right_stick_x * coefRxGamepad2;
+                x = -gamepad2.left_stick_x * coefXGamepad2;
+                y = gamepad2.left_stick_y * coefYGamepad2;
+                rx = -gamepad2.right_stick_x * coefRxGamepad2;
 
                 if (driveModeGamepad2 == DriveType.ROBOTCENTRIC) {
                     denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -175,9 +179,9 @@ public class FinalMainTeleOp extends LinearOpMode {
                     backRightPower = (rotY + rotX - rx) / denominator;
                 }
             } else {
-                x = gamepad1.left_stick_x * coefXGamepad1;
-                y = -gamepad1.left_stick_y * coefYGamepad1;
-                rx = gamepad1.right_stick_x * coefRxGamepad1;
+                x = -gamepad1.left_stick_x * coefXGamepad1;
+                y = gamepad1.left_stick_y * coefYGamepad1;
+                rx = -gamepad1.right_stick_x * coefRxGamepad1;
 
                 if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
                     //======================Gamepad1 drivebase======================
@@ -202,7 +206,6 @@ public class FinalMainTeleOp extends LinearOpMode {
 
             lastShareGamepad1 = currentShareStateGamepad1;
             lastShareGamepad2 = currentShareStateGamepad2;
-
 
             //======================Apllying powers=======================
             robotHardware.frontLeftMotor.setPower(frontLeftPower);
@@ -242,9 +245,9 @@ public class FinalMainTeleOp extends LinearOpMode {
 
             //========================Servo control========================
             if (gamepad1.left_bumper) {
-                intake.setPower(1.0); // Pulls
+                intake.setPower(-1.0); // Pulls
             } else if (gamepad1.right_bumper) {
-                intake.setPower(-1.0); // Push
+                intake.setPower(1.0); // Push
             } else {
                 intake.setPower(0.0); // Steady
             }
@@ -264,9 +267,11 @@ public class FinalMainTeleOp extends LinearOpMode {
                                                 robotHardware.frontRightMotor.getPower()
             );
             TelemetryMethods.displayDriveModes(telemetry, driveModeGamepad1, driveModeGamepad2);
+            TelemetryMethods.displayAlliance(telemetry, ColorConfig.alliance);
             TelemetryMethods.displaySampleValidation(telemetry, sampleDetector.checkColor());
-            TelemetryMethods.displayCodeVersion(telemetry, "7.23.25.1.0.0");
+            TelemetryMethods.displayCodeVersion(telemetry, "7.25.25.6.43");
             telemetry.addLine("-----------------------------");
+            telemetry.update();
         }
     }
 }

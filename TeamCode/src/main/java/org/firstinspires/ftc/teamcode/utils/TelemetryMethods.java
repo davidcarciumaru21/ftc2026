@@ -92,7 +92,7 @@ public final class TelemetryMethods {
      * @param telemetry The telemetry object for output.
      * @param AllianceColorVar This shows the color of the alliance.
      */
-    public static void displaySampleValidation(org.firstinspires.ftc.robotcore.external.Telemetry telemetry, AllianceColor AllianceColorVar) {
+    public static void displayAlliance(org.firstinspires.ftc.robotcore.external.Telemetry telemetry, AllianceColor AllianceColorVar) {
         telemetry.addLine("-----------------------------");
         if (AllianceColorVar == AllianceColor.RED) {
             telemetry.addLine("Color Of The Alliance: RED");

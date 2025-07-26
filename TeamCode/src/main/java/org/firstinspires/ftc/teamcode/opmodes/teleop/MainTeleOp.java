@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import static org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive.PARAMS;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.enums.DriveType;
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.presets.Node;
 import org.firstinspires.ftc.teamcode.presets.Table;
@@ -26,6 +29,7 @@ import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocaliz
 import java.util.List;
 
 @TeleOp(name = "Main-TeleOp-Dev", group = "Dev-Teleops")
+@Disabled
 public class MainTeleOp extends LinearOpMode {
 
     @Override
@@ -51,9 +55,8 @@ public class MainTeleOp extends LinearOpMode {
         tableObj.markUnableToReachNodes(robotPoinToPoint);
 
         // Gamepad button state tracking
-        boolean lastBState = false;
-        boolean currentBState;
-        boolean lastCircle = false;
+        boolean currentCircleState;
+        boolean lastCircleState = false;
 
         // SHARE button state tracking for toggling drive modes
         boolean currentShareStateGamepad1;
@@ -61,12 +64,12 @@ public class MainTeleOp extends LinearOpMode {
         boolean currentShareStateGamepad2;
         boolean lastShareGamepad2 = false;
 
-        // Drive mode tracking: 1 = normal, 2 = field-centric
-        byte driveModeGamepad1 = 1, driveModeGamepad2 = 1;
+        DriveType driveModeGamepad1 = DriveType.ROBOTCENTRIC;
+        DriveType driveModeGamepad2 = DriveType.ROBOTCENTRIC;
 
         // Create and initialize hardware (motors, etc.)
         final Hardware robotHardware = new Hardware();
-        robotHardware.init(hardwareMap, (byte) 2);
+        robotHardware.init(hardwareMap, RobotInitialization.WithRoadRunner);
 
         // Variables for path planning and control
         int xNode, yNode;
@@ -123,10 +126,10 @@ public class MainTeleOp extends LinearOpMode {
             Pose2d currentPose = driveLocalizer.getPose();
 
             // Read circle button press (to trigger path planning)
-            currentBState = gamepad1.circle;
+            currentCircleState = gamepad1.circle;
 
             // Detect rising edge of button press to start autonomous move
-            if (currentBState && !lastBState) {
+            if (currentCircleState && !lastCircleState) {
                 buzy = true; // Disable manual control while robot is moving
 
                 try {
@@ -167,73 +170,75 @@ public class MainTeleOp extends LinearOpMode {
 
             // Manual driving (if not currently executing a path)
             if (!buzy) {
-                // === Update speed coefficients based on Gamepad1 bumper input ===
+                //=============================================================
+                //======================CHASSIS MOVEMENT=======================
+                //=============================================================
+
+                //==================First gamepad coeficients==================
                 coefXGamepad1 = 1.0;
                 coefYGamepad1 = 1.0;
                 coefRxGamepad1 = 1.0;
 
                 if (gamepad1.right_trigger > 0.1) {
-                    // 50% speed mode
+                    // 50% motor power gamepad1
                     coefXGamepad1 = 0.5;
                     coefYGamepad1 = 0.5;
                     coefRxGamepad1 = 0.5;
                 } else if (gamepad1.left_trigger > 0.1) {
-                    // 25% precision mode
+                    // 25% motor power gamepad1
                     coefXGamepad1 = 0.25;
                     coefYGamepad1 = 0.25;
                     coefRxGamepad1 = 0.25;
                 }
 
-                // === Same logic for Gamepad2 bumpers ===
+                //==================Second gamepad coeficients==================
                 coefXGamepad2 = 1.0;
                 coefYGamepad2 = 1.0;
                 coefRxGamepad2 = 1.0;
 
                 if (gamepad2.right_trigger > 0.1) {
+                    // 50% motor power gamepad2
                     coefXGamepad2 = 0.5;
                     coefYGamepad2 = 0.5;
                     coefRxGamepad2 = 0.5;
                 } else if (gamepad2.left_trigger > 0.1) {
+                    // 25% motor power gamepad2
                     coefXGamepad2 = 0.25;
                     coefYGamepad2 = 0.25;
                     coefRxGamepad2 = 0.25;
                 }
 
-                // === Detect drive mode toggle via SHARE button press ===
+                //==================Gamepads drive types selection==================
                 currentShareStateGamepad1 = gamepad1.share;
                 currentShareStateGamepad2 = gamepad2.share;
 
-                // Toggle Gamepad1 mode: 1 ↔ 2
                 if (currentShareStateGamepad1 && !lastShareGamepad1) {
-                    if (driveModeGamepad1 == 1) {
-                        driveModeGamepad1 = 2;
+                    if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
+                        driveModeGamepad1 = DriveType.FIELDCENTRIC;
                     } else {
-                        driveModeGamepad1 = 1;
+                        driveModeGamepad1 = DriveType.ROBOTCENTRIC;
                     }
                 }
 
-                // Toggle Gamepad2 mode: 1 ↔ 2
                 if (currentShareStateGamepad2 && !lastShareGamepad2) {
-                    if (driveModeGamepad2 == 1) {
-                        driveModeGamepad2 = 2;
+                    if (driveModeGamepad2 == DriveType.ROBOTCENTRIC) {
+                        driveModeGamepad2 = DriveType.FIELDCENTRIC;
                     } else {
-                        driveModeGamepad2 = 1;
+                        driveModeGamepad2 = DriveType.ROBOTCENTRIC;
                     }
                 }
 
-                // === Prioritize Gamepad2 control if any joystick input is detected ===
                 boolean gamepad2Active = Math.abs(gamepad2.left_stick_x) > 0.05 ||
                         Math.abs(gamepad2.left_stick_y) > 0.05 ||
                         Math.abs(gamepad2.right_stick_x) > 0.05;
 
                 if (gamepad2Active) {
-                    // === Gamepad2 controls drive ===
-                    x = gamepad2.left_stick_x * coefXGamepad2;
-                    y = -gamepad2.left_stick_y * coefYGamepad2;
-                    rx = gamepad2.right_stick_x * coefRxGamepad2;
+                    //======================Gamepad2 drivebase======================
+                    x = -gamepad2.left_stick_x * coefXGamepad2;
+                    y = gamepad2.left_stick_y * coefYGamepad2;
+                    rx = -gamepad2.right_stick_x * coefRxGamepad2;
 
-                    if (driveModeGamepad2 == 1) {
-                        // Standard (robot-centric) driving
+                    if (driveModeGamepad2 == DriveType.ROBOTCENTRIC) {
                         denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
                         frontLeftPower = (y + x + rx) / denominator;
                         backLeftPower = (y - x + rx) / denominator;
@@ -241,7 +246,6 @@ public class MainTeleOp extends LinearOpMode {
                         backRightPower = (y + x - rx) / denominator;
 
                     } else {
-                        // Field-centric driving using IMU heading
                         botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                         rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                         rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
@@ -253,13 +257,12 @@ public class MainTeleOp extends LinearOpMode {
                         backRightPower = (rotY + rotX - rx) / denominator;
                     }
                 } else {
-                    // === Gamepad1 takes over if Gamepad2 is idle ===
-                    x = gamepad1.left_stick_x * coefXGamepad1;
-                    y = -gamepad1.left_stick_y * coefYGamepad1;
-                    rx = gamepad1.right_stick_x * coefRxGamepad1;
+                    x = -gamepad1.left_stick_x * coefXGamepad1;
+                    y = gamepad1.left_stick_y * coefYGamepad1;
+                    rx = -gamepad1.right_stick_x * coefRxGamepad1;
 
-                    if (driveModeGamepad1 == 1) {
-                        // Robot-centric
+                    if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
+                        //======================Gamepad1 drivebase======================
                         denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
                         frontLeftPower = (y + x + rx) / denominator;
                         backLeftPower = (y - x + rx) / denominator;
@@ -267,7 +270,6 @@ public class MainTeleOp extends LinearOpMode {
                         backRightPower = (y + x - rx) / denominator;
 
                     } else {
-                        // Field-centric
                         botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                         rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                         rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
@@ -280,11 +282,11 @@ public class MainTeleOp extends LinearOpMode {
                     }
                 }
 
-                // === Update last SHARE button states for edge detection ===
                 lastShareGamepad1 = currentShareStateGamepad1;
                 lastShareGamepad2 = currentShareStateGamepad2;
 
-                // === Set calculated powers to motors ===
+
+                //======================Apllying powers=======================
                 robotHardware.frontLeftMotor.setPower(frontLeftPower);
                 robotHardware.backLeftMotor.setPower(backLeftPower);
                 robotHardware.frontRightMotor.setPower(frontRightPower);
@@ -323,7 +325,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             // Update button state tracker
-            lastBState = currentBState;
+            lastCircleState = currentCircleState;
         }
     }
 }

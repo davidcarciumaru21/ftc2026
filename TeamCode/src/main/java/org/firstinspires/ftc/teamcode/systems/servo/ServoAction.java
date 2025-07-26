@@ -19,7 +19,7 @@ public class ServoAction {
 
             @Override
             public boolean run(TelemetryPacket packet) {
-                intake.setPower(power);
+                intake.setPower(-power);
 
                 // Stop immediately after setting power once
                 return false;

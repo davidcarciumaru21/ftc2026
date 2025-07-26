@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 
 @TeleOp(name = "DriveBase-TeleOp", group = "Dev-Teleops")
+@Disabled
 public class DriveBaseTeleOp extends LinearOpMode {
 
     @Override
@@ -14,7 +17,7 @@ public class DriveBaseTeleOp extends LinearOpMode {
 
         // Create and initialize robot hardware instance
         final Hardware robot = new Hardware();
-        robot.init(hardwareMap, (byte) 1);
+        robot.init(hardwareMap, RobotInitialization.WithoutRoadRunner);
 
         // Joystick sensitivity coefficients for tuning strafing, forward, and rotation control
         double coefX = 1.1;  // Strafing (left/right) compensation factor

@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+
 /**
  * Hardware class to manage and initialize the drivetrain motors of the robot.
  */
@@ -17,7 +19,7 @@ public final class Hardware {
      * @param hardwareMap The hardware map from the FTC SDK to access hardware devices
      * @param mode A byte indicating the configuration mode (e.g., 1 to reverse right side motors)
      */
-    public void init(HardwareMap hardwareMap, byte mode) {
+    public void init(HardwareMap hardwareMap, RobotInitialization mode) {
         // Retrieve motor instances from hardware map using configured names
         frontLeftMotor = hardwareMap.get(DcMotor.class, "MotorFL");
         backLeftMotor = hardwareMap.get(DcMotor.class, "MotorBL");
@@ -25,7 +27,7 @@ public final class Hardware {
         backRightMotor = hardwareMap.get(DcMotor.class, "MotorBR");
 
         // If mode is 1, reverse the direction of the right-side motors (common for drivetrain alignment)
-        if (mode == 1) {
+        if (mode == RobotInitialization.WithoutRoadRunner) {
             frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }

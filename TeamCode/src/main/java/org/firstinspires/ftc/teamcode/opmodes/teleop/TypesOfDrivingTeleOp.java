@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.utils.Gamepads;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
+@Disabled
 public class TypesOfDrivingTeleOp extends LinearOpMode {
 
     @Override
@@ -28,7 +31,7 @@ public class TypesOfDrivingTeleOp extends LinearOpMode {
 
         // Create and initialize hardware instance
         final Hardware robotHardware = new Hardware();
-        robotHardware.init(hardwareMap, (byte) 1);
+        robotHardware.init(hardwareMap, RobotInitialization.WithoutRoadRunner);
 
         // Speed scaling coefficients for both gamepads
         double coefXGamepad1 = 1.0;

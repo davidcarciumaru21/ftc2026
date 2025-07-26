@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
@@ -51,7 +53,7 @@ public class AutoSpecimen extends LinearOpMode {
 
         waitForStart();
 
-        robot.init(hardwareMap, (byte) 2);
+        robot.init(hardwareMap, RobotInitialization.WithRoadRunner);
 
         Positions.ArmPosition perimeterUpPos = Positions.getPerimeterUP();
         Positions.ArmPosition specimenDownPos = Positions.getSpecimenDownAuto();
@@ -71,110 +73,118 @@ public class AutoSpecimen extends LinearOpMode {
         Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
         Action servoIn = servo.setPower(-1.0);
 
+        arm.resetArm();
 
         // Primul specimen(deja pe robot)
+        while(opModeIsActive()) {
+            try {
+                Action stafeToSubmersible1 = Movement.strafe(74, 35, driveLocalizer);
 
-        Action stafeToSubmersible1 = Movement.strafe(74, 35, driveLocalizer);
-
-        Actions.runBlocking(new ParallelAction(
-                stafeToSubmersible1,
-                specimenUp
-        ));
+                Actions.runBlocking(new ParallelAction(
+                        stafeToSubmersible1,
+                        specimenUp
+                ));
 
 
-        while (!TSL.isPressed() && !TSR.isPressed()) {
-            robot.backLeftMotor.setPower(0.5);
-            robot.frontLeftMotor.setPower(0.5);
-            robot.backRightMotor.setPower(0.5);
-            robot.frontRightMotor.setPower(0.5);
+                while (!TSL.isPressed() && !TSR.isPressed()) {
+                    robot.backLeftMotor.setPower(0.5);
+                    robot.frontLeftMotor.setPower(0.5);
+                    robot.backRightMotor.setPower(0.5);
+                    robot.frontRightMotor.setPower(0.5);
+                }
+
+
+                Actions.runBlocking(specimenDown);
+
+                sleep(500);
+
+                Action back = Movement.straight(-50, driveLocalizer);
+                Actions.runBlocking(back);
+
+                Action resetheading = Movement.turnTo(0, driveLocalizer);
+
+                // Al doilea sample
+                Action strafeToSample1 = Movement.strafe(0, -85, driveLocalizer);
+                Actions.runBlocking(new SequentialAction(
+                        resetheading,
+                        strafeToSample1
+                ));
+
+                resetheading = Movement.turnTo(0, driveLocalizer);
+                Action straightToSample = Movement.straight(100, driveLocalizer);
+                Actions.runBlocking(new SequentialAction(
+                        resetheading,
+                        straightToSample
+                ));
+
+                Action rightToSample = Movement.strafe(0, -25, driveLocalizer);
+                Actions.runBlocking(rightToSample);
+
+                resetheading = Movement.turnTo(0, driveLocalizer);
+                Action downToBase = Movement.straight(-110, driveLocalizer);
+                Actions.runBlocking(new SequentialAction(
+                        resetheading,
+                        downToBase
+                ));
+
+                Action exitBase = Movement.straight(20, driveLocalizer, 50, 50);
+                Actions.runBlocking(exitBase);
+                Action reverseToSpecimen = Movement.turnTo(180, driveLocalizer);
+                Actions.runBlocking(new ParallelAction(
+                        reverseToSpecimen,
+                        perimeter
+                ));
+                driveLocalizer.update();
+                currentPose = driveLocalizer.getPose();
+
+                double headingError = 180 - Math.toDegrees(currentPose.heading.toDouble());
+                if (headingError > 0 && headingError < 10) {
+                    Action turnAction = Movement.turn(headingError + 2, driveLocalizer, 30, 30);
+                    Actions.runBlocking(turnAction);
+                }
+
+
+                while (!TSL.isPressed() && !TSR.isPressed()) {
+                    robot.backLeftMotor.setPower(0.5);
+                    robot.frontLeftMotor.setPower(0.5);
+                    robot.backRightMotor.setPower(0.5);
+                    robot.frontRightMotor.setPower(0.5);
+                }
+
+                sleep(500);
+
+                Actions.runBlocking(perimeterUp);
+
+                Action backOut = Movement.straight(50, driveLocalizer);
+                Actions.runBlocking(backOut);
+
+                Action splineToSubmersible = Movement.spline(0.0, 125.0, driveLocalizer, 0);
+                Actions.runBlocking(new ParallelAction(
+                        splineToSubmersible,
+                        specimenUp
+                ));
+
+                sleep(500);
+
+                while (!TSL.isPressed() && !TSR.isPressed()) {
+                    robot.backLeftMotor.setPower(0.4);
+                    robot.frontLeftMotor.setPower(0.4);
+                    robot.backRightMotor.setPower(0.4);
+                    robot.frontRightMotor.setPower(0.4);
+                }
+
+                Actions.runBlocking(specimenDown);
+
+                Action backToBase = Movement.strafe(-50, -140, driveLocalizer);
+                Actions.runBlocking(new SequentialAction(
+                        backToBase,
+                        start
+                ));
+                requestOpModeStop();
+            }
+            catch(Exception e){
+                terminateOpModeNow();
+            }
         }
-
-
-        Actions.runBlocking(specimenDown);
-
-        sleep(500);
-
-        Action back = Movement.straight(-50, driveLocalizer);
-        Actions.runBlocking(back);
-
-        Action resetheading = Movement.turnTo(0, driveLocalizer);
-
-        // Al doilea sample
-        Action strafeToSample1 = Movement.strafe(0, -85, driveLocalizer);
-        Actions.runBlocking(new SequentialAction(
-                resetheading,
-                strafeToSample1
-        ));
-
-        resetheading = Movement.turnTo(0, driveLocalizer);
-        Action straightToSample = Movement.straight(100, driveLocalizer);
-        Actions.runBlocking(new SequentialAction(
-                resetheading,
-                straightToSample
-        ));
-
-        Action rightToSample = Movement.strafe(0, -25, driveLocalizer);
-        Actions.runBlocking(rightToSample);
-
-        resetheading = Movement.turnTo(0, driveLocalizer);
-        Action downToBase = Movement.straight(-110, driveLocalizer);
-        Actions.runBlocking(new SequentialAction(
-                resetheading,
-                downToBase
-        ));
-
-        Action exitBase = Movement.straight(20, driveLocalizer, 50, 50);
-        Actions.runBlocking(exitBase);
-        Action reverseToSpecimen = Movement.turnTo(180, driveLocalizer);
-        Actions.runBlocking(new ParallelAction(
-                reverseToSpecimen,
-                perimeter
-        ));
-        driveLocalizer.update();
-        currentPose = driveLocalizer.getPose();
-
-        double headingError = 180 - Math.toDegrees(currentPose.heading.toDouble());
-        if(headingError > 0 && headingError < 10) {
-            Action turnAction = Movement.turn(headingError + 2, driveLocalizer, 30, 30);
-            Actions.runBlocking(turnAction);
-        }
-
-
-        while (!TSL.isPressed() && !TSR.isPressed()) {
-            robot.backLeftMotor.setPower(0.5);
-            robot.frontLeftMotor.setPower(0.5);
-            robot.backRightMotor.setPower(0.5);
-            robot.frontRightMotor.setPower(0.5);
-        }
-
-        sleep(500);
-
-        Actions.runBlocking(perimeterUp);
-
-        Action backOut = Movement.straight(50, driveLocalizer);
-        Actions.runBlocking(backOut);
-
-        Action splineToSubmersible = Movement.spline(0.0, 125.0, driveLocalizer,0);
-        Actions.runBlocking(new ParallelAction(
-                splineToSubmersible,
-                specimenUp
-        ));
-
-        sleep(500);
-
-        while (!TSL.isPressed() && !TSR.isPressed()) {
-            robot.backLeftMotor.setPower(0.4);
-            robot.frontLeftMotor.setPower(0.4);
-            robot.backRightMotor.setPower(0.4);
-            robot.frontRightMotor.setPower(0.4);
-        }
-
-        Actions.runBlocking(specimenDown);
-
-        Action backToBase = Movement.strafe(-50, -140, driveLocalizer);
-        Actions.runBlocking(new SequentialAction(
-                backToBase,
-                start
-        ));
     }
 }

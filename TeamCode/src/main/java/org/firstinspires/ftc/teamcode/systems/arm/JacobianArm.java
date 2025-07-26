@@ -39,10 +39,13 @@ public final class JacobianArm {
         this.dof2.setDirection(DcMotorSimple.Direction.REVERSE);
         this.dof1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.dof2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.dof1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.dof2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.dof1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.dof2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void resetArm(){
+        this.dof1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.dof2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /* renamed from: goto, reason: not valid java name */
@@ -84,7 +87,7 @@ public final class JacobianArm {
         }
     }
 
-    public final Pair<Double, Double> getPosition() {
+    public Pair<Double, Double> getPosition() {
         double theta1_deg = (this.dof1.getCurrentPosition() + this.dof1_offset) / this.TICKS_PER_DEGREE;
         double theta2_deg = (this.dof2.getCurrentPosition() + this.dof2_offset) / this.TICKS_PER_DEGREE;
         double theta1_rad = Math.toRadians(theta1_deg);

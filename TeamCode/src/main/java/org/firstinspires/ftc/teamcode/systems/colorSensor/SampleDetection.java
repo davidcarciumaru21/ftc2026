@@ -41,14 +41,12 @@ public class SampleDetection {
         Color.colorToHSV(colorSensor.getNormalizedColors().toColor(), hsv);
 
         AllianceColor alliance = ColorConfig.alliance;
-
         // RED alliance: detect RED or YELLOW samples
         if (alliance == RED) {
-            return isRed(hsv) || isYellow(hsv);
+            return !isBlue(hsv);
         }
-
         // BLUE alliance: detect BLUE or YELLOW samples
-        return isBlue(hsv) || isYellow(hsv);
+        return !isRed(hsv);
     }
 
     public boolean checkColorAndDistance(double minDistanceCm) {
@@ -66,6 +64,7 @@ public class SampleDetection {
         } else if (alliance == BLUE) {
             colorMatch = isBlue(hsv) || isYellow(hsv);
         }
+
 
         return colorMatch && distance > minDistanceCm;
     }

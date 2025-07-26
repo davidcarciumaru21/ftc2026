@@ -10,13 +10,13 @@ public class ColorConfig {
     // This will be editable in the FTC Dashboard as a dropdown
     public static AllianceColor alliance = AllianceColor.RED;
 
-    public static int redHsvValue1 = 0;
+    public static int redHsvValue1 = 10;
     public static int redHsvValue2 = 30;
 
     public static int blueHsvValue1 = 210;
     public static int blueHsvValue2 = 270;
 
-    public static int yellowHsvValue1 = 30;
+    public static int yellowHsvValue1 = 35;
     public static int yellowHsvValue2 = 70;
 
     public AllianceColor getColor() {
