@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.Utils;
 
-public class MeasurementUnit {
+public class MeasurementUnits {
     /**
      * Converts centimeters to inches.
      *

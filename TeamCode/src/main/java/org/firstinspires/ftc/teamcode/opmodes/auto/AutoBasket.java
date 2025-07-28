@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 // FTC and Road Runner imports
-import android.graphics.Color;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -15,7 +14,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 // Hardware/system imports
 import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
-import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
@@ -24,14 +22,15 @@ import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorAction;
+import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
 
 @Autonomous(name = "Auto Basket", group = "Auto")
 public class AutoBasket extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // --- Initial robot pose (0 cm, 0 cm, 0° heading) ---
-        double startX = MeasurementUnit.cmToInches(0);
-        double startY = MeasurementUnit.cmToInches(0);
+        double startX = MeasurementUnits.cmToInches(0);
+        double startY = MeasurementUnits.cmToInches(0);
         double startHeading = Math.toRadians(0);
         Pose2d startPose = new Pose2d(startX, startY, startHeading);
 

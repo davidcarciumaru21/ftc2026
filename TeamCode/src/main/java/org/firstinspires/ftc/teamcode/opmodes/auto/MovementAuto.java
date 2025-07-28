@@ -4,9 +4,9 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
-import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
 
 public class MovementAuto {
     private final HardwareMap hardwareMap;
@@ -23,7 +23,7 @@ public class MovementAuto {
         Pose2d pose = localizer.getPose();
         MecanumDrive.PARAMS.maxWheelVel = 50;
         MecanumDrive.PARAMS.maxProfileAccel = 50;
-        double xI = MeasurementUnit.cmToInches(x);
+        double xI = MeasurementUnits.cmToInches(x);
         MecanumDrive drive = new MecanumDrive(this.hardwareMap, pose);
         return drive.actionBuilder(pose)
                 .lineToXConstantHeading(pose.position.x + xI)
@@ -31,7 +31,7 @@ public class MovementAuto {
     }
 
     public Action straight(double x, ThreeDeadWheelLocalizer localizer, double vel, double accel) {
-        double xI = MeasurementUnit.cmToInches(x);
+        double xI = MeasurementUnits.cmToInches(x);
         MecanumDrive.PARAMS.maxWheelVel = vel;
         MecanumDrive.PARAMS.maxProfileAccel = accel;
         localizer.update();
@@ -48,8 +48,8 @@ public class MovementAuto {
     public Action strafe(double x, double y, ThreeDeadWheelLocalizer localizer) {
         localizer.update();
         Pose2d pose = localizer.getPose();
-        double xI = MeasurementUnit.cmToInches(x);
-        double yI = MeasurementUnit.cmToInches(y);
+        double xI = MeasurementUnits.cmToInches(x);
+        double yI = MeasurementUnits.cmToInches(y);
         MecanumDrive drive = new MecanumDrive(this.hardwareMap, pose);
         return  drive.actionBuilder(pose)
                 .strafeTo(new Vector2d(pose.position.x + xI, pose.position.y + yI))
@@ -63,8 +63,8 @@ public class MovementAuto {
     public Action spline(double x, double y, ThreeDeadWheelLocalizer localizer, double heading){
         localizer.update();
         Pose2d pose = localizer.getPose();
-        double xI = MeasurementUnit.cmToInches(x);
-        double yI = MeasurementUnit.cmToInches(y);
+        double xI = MeasurementUnits.cmToInches(x);
+        double yI = MeasurementUnits.cmToInches(y);
         MecanumDrive drive = new MecanumDrive(this.hardwareMap, pose);
         return drive.actionBuilder(pose)
                 .splineToLinearHeading(new Pose2d(pose.position.x + xI, pose.position.y + yI, Math.toRadians(heading)), 0)

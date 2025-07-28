@@ -7,9 +7,9 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
-import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
@@ -17,8 +17,7 @@ import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
-
-import com.qualcomm.robotcore.hardware.TouchSensor;
+import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
 
 @Autonomous(group = "Auto", name = "Auto Specimen")
 public class AutoSpecimen extends LinearOpMode {
@@ -26,8 +25,8 @@ public class AutoSpecimen extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // --- Initial robot pose (0 cm, 0 cm, 0° heading) ---
-        double startX = MeasurementUnit.cmToInches(0);
-        double startY = MeasurementUnit.cmToInches(0);
+        double startX = MeasurementUnits.cmToInches(0);
+        double startY = MeasurementUnits.cmToInches(0);
         double startHeading = Math.toRadians(0);
         Pose2d startPose = new Pose2d(startX, startY, startHeading);
         Hardware robot = new Hardware();

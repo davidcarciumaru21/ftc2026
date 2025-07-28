@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
-import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
+import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
-import org.firstinspires.ftc.teamcode.utils.Gamepads;
+import org.firstinspires.ftc.teamcode.Utils.Gamepads;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
 @Disabled

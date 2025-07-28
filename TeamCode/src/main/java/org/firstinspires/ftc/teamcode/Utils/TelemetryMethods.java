@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.Utils;
 
 import org.firstinspires.ftc.teamcode.config.enums.DriveType;
 import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;

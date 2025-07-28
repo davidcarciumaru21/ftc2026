@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import static org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive.PARAMS;
-
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -14,23 +9,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.teamcode.config.robotPosition.RobotPosition;
-import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorConfig;
-import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
+import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
-import org.firstinspires.ftc.teamcode.utils.Gamepads;
+import org.firstinspires.ftc.teamcode.Utils.Gamepads;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 
 import org.firstinspires.ftc.teamcode.config.enums.DriveType;
 import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
-
-import java.io.FileReader;
-import java.io.IOException;
-import com.google.gson.Gson;
 
 @TeleOp(name = "FinalMain-TeleOp", group = "Use")
 public class FinalMainTeleOp extends LinearOpMode {
