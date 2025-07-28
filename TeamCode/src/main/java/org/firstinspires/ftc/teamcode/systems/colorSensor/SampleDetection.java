@@ -8,9 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.enums.AllianceColor;
-
-import static org.firstinspires.ftc.teamcode.enums.AllianceColor.*;
+import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 
 public class SampleDetection {
     int redHsv1 = ColorConfig.redHsvValue1;
@@ -42,7 +40,7 @@ public class SampleDetection {
 
         AllianceColor alliance = ColorConfig.alliance;
         // RED alliance: detect RED or YELLOW samples
-        if (alliance == RED) {
+        if (alliance == AllianceColor.RED) {
             return !isBlue(hsv);
         }
         // BLUE alliance: detect BLUE or YELLOW samples
@@ -59,9 +57,9 @@ public class SampleDetection {
         boolean colorMatch = false;
         AllianceColor alliance = ColorConfig.alliance;
 
-        if (alliance == RED) {
+        if (alliance == AllianceColor.RED) {
             colorMatch = isRed(hsv) || isYellow(hsv);
-        } else if (alliance == BLUE) {
+        } else if (alliance == AllianceColor.BLUE) {
             colorMatch = isBlue(hsv) || isYellow(hsv);
         }
 

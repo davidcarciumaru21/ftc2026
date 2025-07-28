@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import static org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive.PARAMS;
+
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -7,9 +12,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.config.robotPosition.RobotPosition;
+import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorConfig;
 import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
@@ -18,8 +25,12 @@ import org.firstinspires.ftc.teamcode.utils.Gamepads;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 
-import org.firstinspires.ftc.teamcode.enums.DriveType;
-import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+import org.firstinspires.ftc.teamcode.config.enums.DriveType;
+import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
+
+import java.io.FileReader;
+import java.io.IOException;
+import com.google.gson.Gson;
 
 @TeleOp(name = "FinalMain-TeleOp", group = "Use")
 public class FinalMainTeleOp extends LinearOpMode {
@@ -36,6 +47,9 @@ public class FinalMainTeleOp extends LinearOpMode {
         boolean lastShareGamepad1 = false;
         boolean currentShareStateGamepad2;
         boolean lastShareGamepad2 = false;
+
+        boolean currentTriangleStateGamepad1;
+        boolean lastTriangleStateGamepad1 = false;
 
         //=========================Drive types=========================
         DriveType driveModeGamepad1 = DriveType.ROBOTCENTRIC;
@@ -59,10 +73,28 @@ public class FinalMainTeleOp extends LinearOpMode {
         //===================HARDWARE INITIALIZATION===================
         //=============================================================
 
+        double servoPower = 0.0;
+
+
+        /*
+        Gson gson = new Gson();
+        Pose2d startPose;
+
+        try (FileReader reader = new FileReader("org/firstinspires/ftc/teamcode/opmodes/robotPosition.json")) {
+            RobotPosition poseObject = gson.fromJson(reader, RobotPosition.class);
+            startPose = new Pose2d(poseObject.x, poseObject.y, poseObject.heading);
+        } catch (IOException e) {
+            startPose = new Pose2d(0, 0, 0);
+        }
+
+        // Set up Road Runner drive and localization
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        ThreeDeadWheelLocalizer driveLocalizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, startPose);
+         */
 
         //===================Drivebase initialization==================
         final Hardware robotHardware = new Hardware();
-        robotHardware.init(hardwareMap, RobotInitialization.WithoutRoadRunner); // (1)-When not using Road Runner; (2)-When using Road Runner.
+        robotHardware.init(hardwareMap, RobotInitialization.WithoutRoadRunner);
 
         //=====================IMU initialization======================
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -89,6 +121,10 @@ public class FinalMainTeleOp extends LinearOpMode {
         Positions.ArmPosition submersibil2 = Positions.getSubmersibil2();
         Positions.ArmPosition basket3 = Positions.getBasket3();
         Positions.ArmPosition perimeterUp = Positions.getPerimeterUP();
+
+        //=============================================================
+        //=================ROAD RUNNER INITIALIZATION==================
+        //=============================================================
 
         while(opModeIsActive()) {
 
@@ -133,6 +169,7 @@ public class FinalMainTeleOp extends LinearOpMode {
             //==================Gamepads drive types selection==================
             currentShareStateGamepad1 = gamepad1.share;
             currentShareStateGamepad2 = gamepad2.share;
+            currentTriangleStateGamepad1 = gamepad1.triangle;
 
             if (currentShareStateGamepad1 && !lastShareGamepad1) {
                 if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
@@ -180,7 +217,7 @@ public class FinalMainTeleOp extends LinearOpMode {
                 }
             } else {
                 x = -gamepad1.left_stick_x * coefXGamepad1;
-                y = gamepad1.left_stick_y * coefYGamepad1;
+                y =  gamepad1.left_stick_y * coefYGamepad1;
                 rx = -gamepad1.right_stick_x * coefRxGamepad1;
 
                 if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
@@ -218,9 +255,11 @@ public class FinalMainTeleOp extends LinearOpMode {
             //=============================================================
 
             //======================Arm poseitions gamepad1================
+
             if (gamepad1.dpad_up) {
                 arm.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp);
-            } else if (gamepad1.dpad_down) {
+            }
+            else if (gamepad1.dpad_down) {
                 arm.ArmGoto(submersibil1.x, submersibil1.y, submersibil1.elbowUp);
             } else if (gamepad1.dpad_right) {
                 arm.ArmGoto(submersibil2.x, submersibil2.y, submersibil2.elbowUp);
@@ -244,17 +283,54 @@ public class FinalMainTeleOp extends LinearOpMode {
             //=============================================================
 
             //========================Servo control========================
+
+            servoPower = 0.0;
+
             if (gamepad1.left_bumper) {
-                intake.setPower(-1.0); // Pulls
+                servoPower = -1.0;
             } else if (gamepad1.right_bumper) {
-                intake.setPower(1.0); // Push
-            } else {
-                intake.setPower(0.0); // Steady
+                servoPower = 1.0;
             }
+            if (gamepad2.left_bumper) {
+                servoPower = -1.0;
+            } else if (gamepad2.right_bumper) {
+                servoPower = 1.0;
+            }
+
+
+            intake.setPower(servoPower);
 
             if (!sampleDetector.checkColor()) {
                 Gamepads.wrongSampleTypeRumble(gamepad1); // If we are trying to get a wrong colored sample, the controller will vibrate.
             }
+
+            //=============================================================
+            //=================RENEW POSITN AND ROADRUNNER=================
+            //=============================================================
+
+
+
+            /*
+            if (currentTriangleStateGamepad1 && !lastTriangleStateGamepad1) {
+                driveLocalizer.update();
+                Pose2d currentPose = driveLocalizer.getPose();
+                Action backFromSubmersible = drive.actionBuilder(currentPose)
+                        .lineToXConstantHeading(currentPose.position.x - 20)
+                        .build();
+                Actions.runBlocking(backFromSubmersible);
+
+                driveLocalizer.update();
+                currentPose = driveLocalizer.getPose();
+                Action splineToBasket = drive.actionBuilder(currentPose)
+                        .splineToLinearHeading(new Pose2d(-110, 120, Math.toRadians(currentPose.heading.toDouble())), -45)
+                        .build();
+                Actions.runBlocking(splineToBasket);
+
+
+            }
+             */
+
+            lastTriangleStateGamepad1 = currentTriangleStateGamepad1;
 
             //=============================================================
             //==========================TELEMETRY==========================

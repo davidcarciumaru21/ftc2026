@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.enums.DriveType;
-import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+import org.firstinspires.ftc.teamcode.config.enums.DriveType;
+import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.presets.Node;
 import org.firstinspires.ftc.teamcode.presets.Table;

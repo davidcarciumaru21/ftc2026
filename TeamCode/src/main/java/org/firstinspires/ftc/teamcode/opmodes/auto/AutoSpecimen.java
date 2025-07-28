@@ -8,7 +8,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
@@ -46,7 +46,7 @@ public class AutoSpecimen extends LinearOpMode {
         ServoAction servo = new ServoAction(hardwareMap);
         JacobianArm arm = new JacobianArm(hardwareMap);
         ArmAction armAction = new ArmAction(arm);
-
+        arm.resetArm();
         TouchSensor TSL, TSR;
         TSL = hardwareMap.get(TouchSensor.class, "TSL");
         TSR = hardwareMap.get(TouchSensor.class, "TSR");
@@ -96,7 +96,7 @@ public class AutoSpecimen extends LinearOpMode {
 
                 Actions.runBlocking(specimenDown);
 
-                sleep(500);
+                sleep(200);
 
                 Action back = Movement.straight(-50, driveLocalizer);
                 Actions.runBlocking(back);
@@ -134,21 +134,41 @@ public class AutoSpecimen extends LinearOpMode {
                         reverseToSpecimen,
                         perimeter
                 ));
+
                 driveLocalizer.update();
                 currentPose = driveLocalizer.getPose();
-
+/*
                 double headingError = 180 - Math.toDegrees(currentPose.heading.toDouble());
                 if (headingError > 0 && headingError < 10) {
-                    Action turnAction = Movement.turn(headingError + 2, driveLocalizer, 30, 30);
+                    Action turnAction = Movement.turn(headingError, driveLocalizer, 30, 30);
                     Actions.runBlocking(turnAction);
+                }
+
+ */
+
+                while(Math.toDegrees(currentPose.heading.toDouble()) > 181 && Math.toDegrees(currentPose.heading.toDouble()) < 179){
+                    if(Math.toDegrees(currentPose.heading.toDouble()) > -179){
+                        robot.backLeftMotor.setPower(-0.5);
+                        robot.frontLeftMotor.setPower(-0.5);
+                        robot.backRightMotor.setPower(0.5);
+                        robot.frontRightMotor.setPower(0.5);
+                    }
+                    else if(Math.toDegrees(currentPose.heading.toDouble()) < 179){
+                        robot.backLeftMotor.setPower(0.5);
+                        robot.frontLeftMotor.setPower(0.5);
+                        robot.backRightMotor.setPower(-0.5);
+                        robot.frontRightMotor.setPower(-0.5);
+                    }
+                    driveLocalizer.update();
+                    currentPose = driveLocalizer.getPose();
                 }
 
 
                 while (!TSL.isPressed() && !TSR.isPressed()) {
-                    robot.backLeftMotor.setPower(0.5);
-                    robot.frontLeftMotor.setPower(0.5);
-                    robot.backRightMotor.setPower(0.5);
-                    robot.frontRightMotor.setPower(0.5);
+                    robot.backLeftMotor.setPower(0.3);
+                    robot.frontLeftMotor.setPower(0.3);
+                    robot.backRightMotor.setPower(0.3);
+                    robot.frontRightMotor.setPower(0.3);
                 }
 
                 sleep(500);
@@ -180,6 +200,10 @@ public class AutoSpecimen extends LinearOpMode {
                         backToBase,
                         start
                 ));
+                robot.backLeftMotor.setPower(0.0);
+                robot.frontLeftMotor.setPower(0.0);
+                robot.backRightMotor.setPower(0.0);
+                robot.frontRightMotor.setPower(0.0);
                 requestOpModeStop();
             }
             catch(Exception e){

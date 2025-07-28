@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import org.firstinspires.ftc.teamcode.enums.DriveType;
-import org.firstinspires.ftc.teamcode.enums.AllianceColor;
+import org.firstinspires.ftc.teamcode.config.enums.DriveType;
+import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 
 public final class TelemetryMethods {
 

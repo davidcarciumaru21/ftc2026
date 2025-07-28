@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 // FTC and Road Runner imports
+import android.graphics.Color;
+
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -8,8 +10,11 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 // Hardware/system imports
+import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
+import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.utils.MeasurementUnit;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
@@ -17,13 +22,13 @@ import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorAction;
 
 @Autonomous(name = "Auto Basket", group = "Auto")
 public class AutoBasket extends LinearOpMode {
-
     @Override
     public void runOpMode() throws InterruptedException {
-
         // --- Initial robot pose (0 cm, 0 cm, 0° heading) ---
         double startX = MeasurementUnit.cmToInches(0);
         double startY = MeasurementUnit.cmToInches(0);
@@ -45,30 +50,41 @@ public class AutoBasket extends LinearOpMode {
         ServoAction servo = new ServoAction(hardwareMap);
         JacobianArm arm = new JacobianArm(hardwareMap);
         ArmAction armAction = new ArmAction(arm);
+        SampleDetection SampleD = new SampleDetection(hardwareMap);
+        ColorAction color = new ColorAction(SampleD, servo);
         arm.resetArm();
+
+        TouchSensor TSL, TSR;
+        TSL = hardwareMap.get(TouchSensor.class, "TSL");
+        TSR = hardwareMap.get(TouchSensor.class, "TSR");
+        Hardware robot = new Hardware();
+        robot.init(hardwareMap, RobotInitialization.WithRoadRunner);
+
         // --- Wait for the start of the match ---
         waitForStart();
+
+
+        // --- Predefined arm positions ---
+        Positions.ArmPosition basketPos = Positions.getBasket(); // Position for scoring
+        Positions.ArmPosition startPos = Positions.start();      // Initial/resting position
+        Positions.ArmPosition submersibil2Pos = Positions.getSubmersibil2();
+        Positions.ArmPosition perimeterUpPos = Positions.getPerimeterUP();
+        // --- Movement and mechanism actions ---
+
+        Action basket = armAction.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp); // Move arm to scoring position
+        Action start = armAction.ArmGoto(startPos.x, startPos.y, startPos.elbowUp);     // Move arm back to start
+        Action submersibil2 = armAction.ArmGoto(submersibil2Pos.x, submersibil2Pos.y, submersibil2Pos.elbowUp);
+        Action perimeterUp = armAction.ArmGoto(perimeterUpPos.x, perimeterUpPos.y, perimeterUpPos.elbowUp);
+
+        Action servoOut = servo.setPower(1.0);  // Activate servo to take game element
+        Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
+        Action servoIn = servo.setPower(-1.0); // Activate servo to eject game element
+
+        Action servoUntilDropped = color.goUntilSampleDropped(5);
+
+        // Punem cel de-al zerolea cub
         while(opModeIsActive()) {
             try {
-
-                // --- Predefined arm positions ---
-                Positions.ArmPosition basketPos = Positions.getBasket(); // Position for scoring
-                Positions.ArmPosition startPos = Positions.start();      // Initial/resting position
-                Positions.ArmPosition submersibil2Pos = Positions.getSubmersibil2();
-                Positions.ArmPosition perimeterUpPos = Positions.getPerimeterUP();
-                // --- Movement and mechanism actions ---
-
-                Action basket = armAction.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp); // Move arm to scoring position
-                Action start = armAction.ArmGoto(startPos.x, startPos.y, startPos.elbowUp);     // Move arm back to start
-                Action submersibil2 = armAction.ArmGoto(submersibil2Pos.x, submersibil2Pos.y, submersibil2Pos.elbowUp);
-                Action perimeterUp = armAction.ArmGoto(perimeterUpPos.x, perimeterUpPos.y, perimeterUpPos.elbowUp);
-
-                Action servoOut = servo.setPower(1.0);  // Activate servo to eject game element
-                Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
-                Action servoIn = servo.setPower(-1.0);
-
-                // Punem cel de-al zerolea cub
-
                 // --- Drive to target zone using a spline path ---
                 Action splineToDrop = Movement.spline(30, 50, driveLocalizer, -50); // Spline path to target area
                 Actions.runBlocking(new ParallelAction(
@@ -83,7 +99,7 @@ public class AutoBasket extends LinearOpMode {
                         servoOut
                 ));
 
-                sleep(1000); // Allow 1 second for ejection
+                sleep(1000);
 
                 Actions.runBlocking(servoStop);
 
@@ -91,18 +107,26 @@ public class AutoBasket extends LinearOpMode {
 
                 // First sample
 
-                Action backToPositon = Movement.straight(5, driveLocalizer);
+                Action backToPositon = Movement.straight(6, driveLocalizer);
                 Actions.runBlocking(new ParallelAction(
                         backToPositon,
                         submersibil2
                 ));
 
 
-                Action turnPick = Movement.turnTo(6, driveLocalizer, 50, 50);
+                Action turnPick = Movement.turnTo(4, driveLocalizer, 50, 50);
                 Actions.runBlocking(new ParallelAction(
                         turnPick,
                         servoIn
                 ));
+                robot.backLeftMotor.setPower(0.2);
+                robot.frontLeftMotor.setPower(0.2);
+                robot.backRightMotor.setPower(0.2);
+                robot.frontRightMotor.setPower(0.2);
+
+                sleep(200);
+
+
 
                 Action turnBack = Movement.turnTo(-50, driveLocalizer);
                 Actions.runBlocking(new ParallelAction(
@@ -110,13 +134,16 @@ public class AutoBasket extends LinearOpMode {
                         servoStop
                 ));
 
+
                 Actions.runBlocking(basket);
 
-                Action backdrop = Movement.straight(-7, driveLocalizer);
+                Action backdrop = Movement.straight(-8, driveLocalizer);
                 Actions.runBlocking(new SequentialAction(
                         backdrop,
                         servoOut
                 ));
+
+
 
                 sleep(500);
 
@@ -124,20 +151,25 @@ public class AutoBasket extends LinearOpMode {
 
                 double time2 = getRuntime();
 
-                // Al treilea sample
+                // Al doilea sample
 
-                Action forwardPick = Movement.straight(5, driveLocalizer);
+                Action forwardPick = Movement.straight(3.5, driveLocalizer);
 
                 Actions.runBlocking(new ParallelAction(
                         forwardPick,
                         submersibil2
                 ));
 
-                Action turnPick2 = Movement.turnTo(20, driveLocalizer, 75, 75);
+                Action turnPick2 = Movement.turnTo(24, driveLocalizer, 75, 75);
                 Actions.runBlocking(new ParallelAction(
                         turnPick2,
                         servoIn
                 ));
+
+                robot.backLeftMotor.setPower(0.2);
+                robot.frontLeftMotor.setPower(0.2);
+                robot.backRightMotor.setPower(0.2);
+                robot.frontRightMotor.setPower(0.2);
 
                 double time3 = getRuntime();
 
@@ -149,7 +181,7 @@ public class AutoBasket extends LinearOpMode {
                         basket
                 ));
 
-                Action backToDrop2 = Movement.straight(-4, driveLocalizer);
+                Action backToDrop2 = Movement.straight(-5, driveLocalizer);
                 Actions.runBlocking(new SequentialAction(
                         backToDrop2,
                         servoOut
@@ -162,10 +194,12 @@ public class AutoBasket extends LinearOpMode {
                         submersibil2
                 ));
 
-                Action forwardPick2 = Movement.straight(14, driveLocalizer);
+                // Al treilea sample
+
+                Action forwardPick2 = Movement.straight(6, driveLocalizer);
                 Actions.runBlocking(forwardPick2);
 
-                Action turnPick3 = Movement.turnTo(48, driveLocalizer, 75, 75);
+                Action turnPick3 = Movement.turnTo(40, driveLocalizer, 75, 75);
                 Actions.runBlocking(new ParallelAction(
                         turnPick3,
                         servoIn
@@ -179,7 +213,7 @@ public class AutoBasket extends LinearOpMode {
 
                 Actions.runBlocking(basket);
 
-                Action backDrop2 = Movement.straight(-11, driveLocalizer);
+                Action backDrop2 = Movement.straight(-12, driveLocalizer);
                 Actions.runBlocking(new SequentialAction(
                         backDrop2,
                         servoOut
@@ -193,6 +227,8 @@ public class AutoBasket extends LinearOpMode {
                         turnToSubmersible
                 ));
 
+
+
                 Action strafeToSubmersible = Movement.strafe(110, -80, driveLocalizer);
 
                 Actions.runBlocking(new ParallelAction(
@@ -200,14 +236,20 @@ public class AutoBasket extends LinearOpMode {
                         perimeterUp
                 ));
 
-
-                Action backToSubmersible = Movement.straight(-20, driveLocalizer);
-                Actions.runBlocking(backToSubmersible);
+                while (!TSL.isPressed() && !TSR.isPressed()) {
+                    robot.backLeftMotor.setPower(0.5);
+                    robot.frontLeftMotor.setPower(0.5);
+                    robot.backRightMotor.setPower(0.5);
+                    robot.frontRightMotor.setPower(0.5);
+                }
 
                 double timeNew = getRuntime();
+
+
+
                 requestOpModeStop();
             }
-            catch(Exception e) {
+            catch(Exception e){
                 terminateOpModeNow();
             }
         }

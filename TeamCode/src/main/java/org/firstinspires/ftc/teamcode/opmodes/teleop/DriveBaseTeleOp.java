@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.utils.TelemetryMethods;
 import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 

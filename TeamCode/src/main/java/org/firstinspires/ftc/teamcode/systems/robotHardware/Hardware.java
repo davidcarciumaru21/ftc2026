@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.enums.RobotInitialization;
+import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
 
 /**
  * Hardware class to manage and initialize the drivetrain motors of the robot.

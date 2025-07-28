@@ -18,21 +18,24 @@ public class Positions {
     public static double specimenUpY = 64.0d;
     public static boolean specimenUpElbowUp = true;
     public static double specimenDownX = 20.85d;
-    public static double specimenDownY = 54.62d;
+    public static double specimenDownY = 52.62d;
     public static double specimenDownXAuto = 20.85d;
     public static double specimenDownYAuto = 50.62d;
     public static boolean specimenDownElbowUp = true;
     public static double perimeterX = 43.0d;
-    public static double perimeterY = 30.0d;
+    public static double perimeterY = 26.0d;
+
+    public static double perimeterXAuto = 46.0d;
+    public static double perimeterYAuto = 26.0d;
     public static boolean perimeterElbowUp = true;
     public static double startX = -1.37d;
     public static double startY = 8.9d;
     public static boolean startElbowUp = true;
     public static double perimeterUPX = 43.0d;
-    public static double perimeterUPY = 34.0d;
+    public static double perimeterUPY = 30.0d;
     public static boolean perimeterUPElbowUp = true;
     public static double basket3X = 79.84d;
-    public static double basket3Y = -33.27d;
+    public static double basket3Y = -25.27d;
     public static boolean basket3ElbowUp = false;
 
     public static ArmPosition getBasket() {
@@ -69,6 +72,10 @@ public class Positions {
 
     public static ArmPosition getPerimeter() {
         return new ArmPosition(perimeterX, perimeterY, perimeterElbowUp);
+    }
+
+    public static ArmPosition getPerimeterAuto() {
+        return new ArmPosition(perimeterXAuto, perimeterYAuto, perimeterElbowUp);
     }
 
     public static ArmPosition getPerimeterUP() {
