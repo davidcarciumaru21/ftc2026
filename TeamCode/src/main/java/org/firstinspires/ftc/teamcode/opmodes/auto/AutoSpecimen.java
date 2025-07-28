@@ -9,14 +9,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
-import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
 
 @Autonomous(group = "Auto", name = "Auto Specimen")
@@ -29,7 +27,6 @@ public class AutoSpecimen extends LinearOpMode {
         double startY = MeasurementUnits.cmToInches(0);
         double startHeading = Math.toRadians(0);
         Pose2d startPose = new Pose2d(startX, startY, startHeading);
-        Hardware robot = new Hardware();
         // --- Initialize Road Runner drive and localization ---
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         ThreeDeadWheelLocalizer driveLocalizer = new ThreeDeadWheelLocalizer(
@@ -51,8 +48,6 @@ public class AutoSpecimen extends LinearOpMode {
         TSR = hardwareMap.get(TouchSensor.class, "TSR");
 
         waitForStart();
-
-        robot.init(hardwareMap, RobotInitialization.WithRoadRunner);
 
         Positions.ArmPosition perimeterUpPos = Positions.getPerimeterUP();
         Positions.ArmPosition specimenDownPos = Positions.getSpecimenDownAuto();
@@ -86,10 +81,10 @@ public class AutoSpecimen extends LinearOpMode {
 
 
                 while (!TSL.isPressed() && !TSR.isPressed()) {
-                    robot.backLeftMotor.setPower(0.5);
-                    robot.frontLeftMotor.setPower(0.5);
-                    robot.backRightMotor.setPower(0.5);
-                    robot.frontRightMotor.setPower(0.5);
+                    drive.leftFront.setPower(0.5);
+                    drive.leftBack.setPower(0.5);
+                    drive.rightFront.setPower(0.5);
+                    drive.rightBack.setPower(0.5);
                 }
 
 
@@ -147,16 +142,16 @@ public class AutoSpecimen extends LinearOpMode {
 
                 while(Math.toDegrees(currentPose.heading.toDouble()) > 181 && Math.toDegrees(currentPose.heading.toDouble()) < 179){
                     if(Math.toDegrees(currentPose.heading.toDouble()) > -179){
-                        robot.backLeftMotor.setPower(-0.5);
-                        robot.frontLeftMotor.setPower(-0.5);
-                        robot.backRightMotor.setPower(0.5);
-                        robot.frontRightMotor.setPower(0.5);
+                        drive.leftFront.setPower(-0.5);
+                        drive.leftBack.setPower(-0.5);
+                        drive.rightFront.setPower(0.5);
+                        drive.rightBack.setPower(0.5);
                     }
                     else if(Math.toDegrees(currentPose.heading.toDouble()) < 179){
-                        robot.backLeftMotor.setPower(0.5);
-                        robot.frontLeftMotor.setPower(0.5);
-                        robot.backRightMotor.setPower(-0.5);
-                        robot.frontRightMotor.setPower(-0.5);
+                        drive.leftFront.setPower(0.5);
+                        drive.leftBack.setPower(0.5);
+                        drive.rightFront.setPower(-0.5);
+                        drive.rightBack.setPower(-0.5);
                     }
                     driveLocalizer.update();
                     currentPose = driveLocalizer.getPose();
@@ -164,10 +159,10 @@ public class AutoSpecimen extends LinearOpMode {
 
 
                 while (!TSL.isPressed() && !TSR.isPressed()) {
-                    robot.backLeftMotor.setPower(0.3);
-                    robot.frontLeftMotor.setPower(0.3);
-                    robot.backRightMotor.setPower(0.3);
-                    robot.frontRightMotor.setPower(0.3);
+                    drive.leftFront.setPower(0.3);
+                    drive.leftBack.setPower(0.3);
+                    drive.rightFront.setPower(0.3);
+                    drive.rightBack.setPower(0.3);
                 }
 
                 sleep(500);
@@ -186,10 +181,10 @@ public class AutoSpecimen extends LinearOpMode {
                 sleep(500);
 
                 while (!TSL.isPressed() && !TSR.isPressed()) {
-                    robot.backLeftMotor.setPower(0.4);
-                    robot.frontLeftMotor.setPower(0.4);
-                    robot.backRightMotor.setPower(0.4);
-                    robot.frontRightMotor.setPower(0.4);
+                    drive.leftFront.setPower(0.4);
+                    drive.leftBack.setPower(0.4);
+                    drive.rightFront.setPower(0.4);
+                    drive.rightBack.setPower(0.4);
                 }
 
                 Actions.runBlocking(specimenDown);
@@ -199,10 +194,10 @@ public class AutoSpecimen extends LinearOpMode {
                         backToBase,
                         start
                 ));
-                robot.backLeftMotor.setPower(0.0);
-                robot.frontLeftMotor.setPower(0.0);
-                robot.backRightMotor.setPower(0.0);
-                robot.frontRightMotor.setPower(0.0);
+                drive.leftFront.setPower(0.0);
+                drive.leftBack.setPower(0.0);
+                drive.rightFront.setPower(0.0);
+                drive.rightBack.setPower(0.0);
                 requestOpModeStop();
             }
             catch(Exception e){

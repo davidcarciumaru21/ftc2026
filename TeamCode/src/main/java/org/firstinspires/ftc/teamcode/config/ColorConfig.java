@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.systems.colorSensor;
+package org.firstinspires.ftc.teamcode.config;
 
 import com.acmerobotics.dashboard.config.Config;
 

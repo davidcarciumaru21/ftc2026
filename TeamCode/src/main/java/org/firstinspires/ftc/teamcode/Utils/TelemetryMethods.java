@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
+import com.acmerobotics.roadrunner.Pose2d;
+
 import org.firstinspires.ftc.teamcode.config.enums.DriveType;
 import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 
@@ -99,5 +101,18 @@ public final class TelemetryMethods {
         } else if (AllianceColorVar == AllianceColor.BLUE) {
             telemetry.addLine("Color Of The Alliance: BLUE");
         }
+    }
+
+    /**
+     * Displays the current pose of the robot.
+     *
+     * @param telemetry The telemetry object for output.
+     * @param pose The current pose of the robot.
+     */
+    public static void displayPostion(org.firstinspires.ftc.robotcore.external.Telemetry telemetry, Pose2d pose) {
+        telemetry.addLine("-----------------------------");
+        telemetry.addData("X", pose.position.x);
+        telemetry.addData("Y", pose.position.y);
+        telemetry.addData("Heading(Degrees)", Math.toDegrees(pose.heading.toDouble()));
     }
 }

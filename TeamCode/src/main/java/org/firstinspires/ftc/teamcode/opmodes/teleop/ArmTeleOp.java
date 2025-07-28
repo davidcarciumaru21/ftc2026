@@ -1,24 +1,37 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+//==============================Robot Core=============================
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+//=============================Robot Systems===========================
+import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
+import org.firstinspires.ftc.teamcode.config.ColorConfig;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
+
+//=================================Utils===============================
+import org.firstinspires.ftc.teamcode.Utils.Gamepads;
 
 @TeleOp(name = "TeleopArm", group = "Dev-Teleops")
-@Disabled
 public class ArmTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // TYPE: INIT - Initialize arm and intake
+        //================Arm and intake initialization=================
         JacobianArm arm = new JacobianArm(hardwareMap);
+
+        double servoPower;
         CRServo intake = hardwareMap.get(CRServo.class, "intake");
 
-        // TYPE: INIT - Load predefined arm positions
+        SampleDetection sampleDetector = new SampleDetection(hardwareMap);
+
+        // Wait for the start button
+        waitForStart();
+
+        //========================Arm positions=========================
         Positions.ArmPosition basketPos = Positions.getBasket();
         Positions.ArmPosition perimeterPos = Positions.getPerimeter();
         Positions.ArmPosition specimenUpPos = Positions.getSpecimenUp();
@@ -28,11 +41,14 @@ public class ArmTeleOp extends LinearOpMode {
         Positions.ArmPosition basket3 = Positions.getBasket3();
         Positions.ArmPosition perimeterUp = Positions.getPerimeterUP();
 
-        waitForStart();
+        // Main control loop
+        while (opModeIsActive()) {
+            //=============================================================
+            //========================ARM MOVEMENT=========================
+            //=============================================================
 
-        // TYPE: CONTROL - Runtime loop
-        while(opModeIsActive()) {
-            // TYPE: CONTROL - Gamepad1 D-Pad for preset arm positions
+            //=====================Arm positions gamepad1==================
+
             if (gamepad1.dpad_up) {
                 arm.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp);
             } else if (gamepad1.dpad_down) {
@@ -43,7 +59,7 @@ public class ArmTeleOp extends LinearOpMode {
                 arm.ArmGoto(basket3.x, basket3.y, basket3.elbowUp);
             }
 
-            // TYPE: CONTROL - Gamepad2 D-Pad for alternate positions
+            //=====================Arm positions gamepad2==================
             if (gamepad2.dpad_down) {
                 arm.ArmGoto(perimeterPos.x, perimeterPos.y, perimeterPos.elbowUp);
             } else if (gamepad2.dpad_right) {
@@ -54,14 +70,36 @@ public class ArmTeleOp extends LinearOpMode {
                 arm.ArmGoto(perimeterUp.x, perimeterUp.y, perimeterUp.elbowUp);
             }
 
-            // TYPE: CONTROL - Intake control using Gamepad1 bumpers
+            //=============================================================
+            //========================INTAKE ACTIONS=======================
+            //=============================================================
+
+            //========================Servo control========================
+
+            servoPower = 0.0;
+
             if (gamepad1.left_bumper) {
-                intake.setPower(1.0);
+                servoPower = -1.0;
             } else if (gamepad1.right_bumper) {
-                intake.setPower(-1.0);
-            } else {
-                intake.setPower(0.0);
+                servoPower = 1.0;
             }
+            if (gamepad2.left_bumper) {
+                servoPower = -1.0;
+            } else if (gamepad2.right_bumper) {
+                servoPower = 1.0;
+            }
+
+            intake.setPower(servoPower);
+
+            //=============================================================
+            //==========================TELEMETRY==========================
+            //=============================================================
+
+            TelemetryMethods.displayAlliance(telemetry, ColorConfig.alliance);
+            TelemetryMethods.displaySampleValidation(telemetry, sampleDetector.checkColor());
+            TelemetryMethods.displayCodeVersion(telemetry, "7.29.25.2.33");
+            telemetry.addLine("-----------------------------");
+            telemetry.update();
         }
     }
 }

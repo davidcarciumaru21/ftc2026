@@ -12,8 +12,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 // Hardware/system imports
-import org.firstinspires.ftc.teamcode.config.enums.RobotInitialization;
-import org.firstinspires.ftc.teamcode.systems.robotHardware.Hardware;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
@@ -23,6 +21,14 @@ import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorAction;
 import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Autonomous(name = "Auto Basket", group = "Auto")
 public class AutoBasket extends LinearOpMode {
@@ -56,8 +62,6 @@ public class AutoBasket extends LinearOpMode {
         TouchSensor TSL, TSR;
         TSL = hardwareMap.get(TouchSensor.class, "TSL");
         TSR = hardwareMap.get(TouchSensor.class, "TSR");
-        Hardware robot = new Hardware();
-        robot.init(hardwareMap, RobotInitialization.WithRoadRunner);
 
         // --- Wait for the start of the match ---
         waitForStart();
@@ -118,21 +122,18 @@ public class AutoBasket extends LinearOpMode {
                         turnPick,
                         servoIn
                 ));
-                robot.backLeftMotor.setPower(0.2);
-                robot.frontLeftMotor.setPower(0.2);
-                robot.backRightMotor.setPower(0.2);
-                robot.frontRightMotor.setPower(0.2);
+                drive.leftFront.setPower(0.2);
+                drive.leftBack.setPower(0.2);
+                drive.rightFront.setPower(0.2);
+                drive.rightBack.setPower(0.2);
 
                 sleep(200);
-
-
 
                 Action turnBack = Movement.turnTo(-50, driveLocalizer);
                 Actions.runBlocking(new ParallelAction(
                         turnBack,
                         servoStop
                 ));
-
 
                 Actions.runBlocking(basket);
 
@@ -141,8 +142,6 @@ public class AutoBasket extends LinearOpMode {
                         backdrop,
                         servoOut
                 ));
-
-
 
                 sleep(500);
 
@@ -165,10 +164,10 @@ public class AutoBasket extends LinearOpMode {
                         servoIn
                 ));
 
-                robot.backLeftMotor.setPower(0.2);
-                robot.frontLeftMotor.setPower(0.2);
-                robot.backRightMotor.setPower(0.2);
-                robot.frontRightMotor.setPower(0.2);
+                drive.leftFront.setPower(0.2);
+                drive.leftBack.setPower(0.2);
+                drive.rightFront.setPower(0.2);
+                drive.rightBack.setPower(0.2);
 
                 double time3 = getRuntime();
 
@@ -226,8 +225,6 @@ public class AutoBasket extends LinearOpMode {
                         turnToSubmersible
                 ));
 
-
-
                 Action strafeToSubmersible = Movement.strafe(110, -80, driveLocalizer);
 
                 Actions.runBlocking(new ParallelAction(
@@ -236,15 +233,30 @@ public class AutoBasket extends LinearOpMode {
                 ));
 
                 while (!TSL.isPressed() && !TSR.isPressed()) {
-                    robot.backLeftMotor.setPower(0.5);
-                    robot.frontLeftMotor.setPower(0.5);
-                    robot.backRightMotor.setPower(0.5);
-                    robot.frontRightMotor.setPower(0.5);
+                    drive.leftFront.setPower(0.5);
+                    drive.leftBack.setPower(0.5);
+                    drive.rightFront.setPower(0.5);
+                    drive.rightBack.setPower(0.5);
                 }
 
                 double timeNew = getRuntime();
 
+                driveLocalizer.update();
+                currentPose = driveLocalizer.getPose();
 
+                JsonObject json = new JsonObject();
+                json.addProperty("x", currentPose.position.x);
+                json.addProperty("y", currentPose.position.y);
+                json.addProperty("heading", currentPose.heading.toDouble());
+
+                Gson gson = new Gson();
+
+                File file = AppUtil.getInstance().getSettingsFile("robotPosition.json");
+                try (FileWriter writer = new FileWriter(file)) {
+                    gson.toJson(json, writer);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 requestOpModeStop();
             }

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.config.ColorConfig;
 import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 
 public class SampleDetection {
