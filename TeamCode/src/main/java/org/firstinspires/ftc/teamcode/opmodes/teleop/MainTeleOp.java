@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 //==============================Robot Core=============================
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,21 +19,26 @@ import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
+import com.acmerobotics.roadrunner.VelConstraint;
+import com.acmerobotics.roadrunner.AccelConstraint;
 
 //=============================Robot Systems===========================
 import org.firstinspires.ftc.teamcode.config.ColorConfig;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
+import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 
 //=================================Utils===============================
 import org.firstinspires.ftc.teamcode.Utils.Gamepads;
 import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
+import org.firstinspires.ftc.teamcode.Utils.WaitAction;
 
 //=============================Configurations==========================
 import org.firstinspires.ftc.teamcode.config.enums.DriveType;
 import org.firstinspires.ftc.teamcode.config.PresetsPositions;
 import org.firstinspires.ftc.teamcode.config.GamepadsCoefficients;
+import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 
 //=============================File reading============================
 import java.io.FileReader;
@@ -103,6 +111,11 @@ public class MainTeleOp extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         ThreeDeadWheelLocalizer driveLocalizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick, startPose);
 
+        MecanumDrive.PARAMS.maxWheelVel = 100;
+        MecanumDrive.PARAMS.maxProfileAccel = 100;
+        MecanumDrive.PARAMS.minProfileAccel = -10+0;
+        MecanumDrive speedDrive = new MecanumDrive(hardwareMap, startPose);
+
         //=====================IMU initialization======================
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -115,7 +128,6 @@ public class MainTeleOp extends LinearOpMode {
 
         double servoPower;
         CRServo intake = hardwareMap.get(CRServo.class, "intake");
-
         SampleDetection sampleDetector = new SampleDetection(hardwareMap);
 
         // Wait for the start button
@@ -130,6 +142,14 @@ public class MainTeleOp extends LinearOpMode {
         Positions.ArmPosition submersibil2 = Positions.getSubmersibil2();
         Positions.ArmPosition basket3 = Positions.getBasket3();
         Positions.ArmPosition perimeterUp = Positions.getPerimeterUP();
+
+        //===========================Actions============================
+        ArmAction armAction = new ArmAction(arm);
+        Action basket = armAction.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp); // Move arm to scoring position
+        ServoAction servo = new ServoAction(hardwareMap);
+        Action servoOut = servo.setPower(-1.0);  // Activate servo to take game element
+        Action servoStop = servo.setPower(0.0); // Stop the servo after ejection
+        Action servoIn = servo.setPower(1.0); // Activate servo to eject game element
 
         // Main control loop
         while(opModeIsActive()) {
@@ -315,49 +335,39 @@ public class MainTeleOp extends LinearOpMode {
             //====Preset for getting to the basket from the submersible====
             if (currentTriangleStateGamepad1 && !lastTriangleStateGamepad1) {
 
-                driveLocalizer.update();
-                currentPose = driveLocalizer.getPose();
-                Action resetAngle = drive.actionBuilder(currentPose)
-                        .turnTo(90)
-                        .build();
-                Actions.runBlocking(resetAngle);
-
                 // The path from generatedthe current position to the basket is depending on the color of the alliance
                 if (ColorConfig.alliance == AllianceColor.BLUE) {
 
-                    // Moving away form the submersible
-                    driveLocalizer.update();
-                    currentPose = driveLocalizer.getPose();
-                    Action backFromSubmersible = drive.actionBuilder(currentPose)
-                            .lineToXConstantHeading(currentPose.position.x + 20)
-                            .build();
-                    Actions.runBlocking(backFromSubmersible);
+                    drive.leftFront.setPower(0.0);
+                    drive.leftBack.setPower(0.0);
+                    drive.rightFront.setPower(0.0);
+                    drive.rightBack.setPower(0.0);
 
                     // Going to the basket
                     driveLocalizer.update();
                     currentPose = driveLocalizer.getPose();
-                    Action splineToBasket = drive.actionBuilder(currentPose)
-                            .splineToLinearHeading(PresetsPositions.blueBasePosition, 0)
+                    Action splineToBasket = speedDrive.actionBuilder(currentPose)
+                            .splineToLinearHeading(PresetsPositions.blueBasketPosition, -45)
                             .build();
+
                     Actions.runBlocking(splineToBasket);
+
                 }
 
                 else if (ColorConfig.alliance == AllianceColor.RED) {
 
-                    // Moving away form the submersible
-                    driveLocalizer.update();
-                    currentPose = driveLocalizer.getPose();
-                    Action backFromSubmersible = drive.actionBuilder(currentPose)
-                            .lineToXConstantHeading(currentPose.position.x - 20)
-                            .build();
-                    Actions.runBlocking(backFromSubmersible);
+                    drive.leftFront.setPower(0.0);
+                    drive.leftBack.setPower(0.0);
+                    drive.rightFront.setPower(0.0);
+                    drive.rightBack.setPower(0.0);
 
                     // Going to the basket
                     driveLocalizer.update();
                     currentPose = driveLocalizer.getPose();
-                    Action splineToBasket = drive.actionBuilder(currentPose)
-                            .splineToLinearHeading(PresetsPositions.redBasePosition, 0)
+                    Action splineToBasket = speedDrive.actionBuilder(currentPose)
+                            .splineToLinearHeading(PresetsPositions.blueBasketPosition, -45)
                             .build();
+
                     Actions.runBlocking(splineToBasket);
                 }
             }

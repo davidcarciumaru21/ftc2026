@@ -32,8 +32,8 @@ public class AutoSpecimen extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // --- Initial robot pose (0 cm, 0 cm, 0° heading) ---
-        double startX = MeasurementUnits.cmToInches(0);
-        double startY = MeasurementUnits.cmToInches(0);
+        double startX = MeasurementUnits.cmToInches(-100);
+        double startY = MeasurementUnits.cmToInches(-20);
         double startHeading = Math.toRadians(0);
         Pose2d startPose = new Pose2d(startX, startY, startHeading);
         // --- Initialize Road Runner drive and localization ---
@@ -81,13 +81,21 @@ public class AutoSpecimen extends LinearOpMode {
         // Primul specimen(deja pe robot)
         while(opModeIsActive()) {
             try {
+
+                Action test = Movement.straight(10, driveLocalizer);
+                Actions.runBlocking(test);
+
+                drive.leftFront.setPower(0.0);
+                drive.leftBack.setPower(0.0);
+                drive.rightFront.setPower(0.0);
+                drive.rightBack.setPower(0.0);
+                /*
                 Action stafeToSubmersible1 = Movement.strafe(74, 35, driveLocalizer);
 
                 Actions.runBlocking(new ParallelAction(
                         stafeToSubmersible1,
                         specimenUp
                 ));
-
 
                 while (!TSL.isPressed() && !TSR.isPressed()) {
                     drive.leftFront.setPower(0.5);
@@ -140,14 +148,13 @@ public class AutoSpecimen extends LinearOpMode {
 
                 driveLocalizer.update();
                 currentPose = driveLocalizer.getPose();
-/*
+
                 double headingError = 180 - Math.toDegrees(currentPose.heading.toDouble());
                 if (headingError > 0 && headingError < 10) {
                     Action turnAction = Movement.turn(headingError, driveLocalizer, 30, 30);
                     Actions.runBlocking(turnAction);
                 }
 
- */
 
                 while(Math.toDegrees(currentPose.heading.toDouble()) > 181 && Math.toDegrees(currentPose.heading.toDouble()) < 179){
                     if(Math.toDegrees(currentPose.heading.toDouble()) > -179){
@@ -207,6 +214,7 @@ public class AutoSpecimen extends LinearOpMode {
                 drive.leftBack.setPower(0.0);
                 drive.rightFront.setPower(0.0);
                 drive.rightBack.setPower(0.0);
+                */
 
                 driveLocalizer.update();
                 currentPose = driveLocalizer.getPose();

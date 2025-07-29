@@ -306,7 +306,7 @@ public final class MecanumDrive {
 
 
             if (t >= timeTrajectory.duration) {
-                if (error.position.norm() < 2.0 &&
+                if (error.position.norm() < 1.0 &&
                         robotVelRobot.linearVel.norm() < 0.5) {  // 3 degrees tolerance
                     leftFront.setPower(0);
                     leftBack.setPower(0);
