@@ -5,10 +5,13 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
@@ -16,6 +19,12 @@ import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Autonomous(group = "Auto", name = "Auto Specimen")
 public class AutoSpecimen extends LinearOpMode {
@@ -198,6 +207,24 @@ public class AutoSpecimen extends LinearOpMode {
                 drive.leftBack.setPower(0.0);
                 drive.rightFront.setPower(0.0);
                 drive.rightBack.setPower(0.0);
+
+                driveLocalizer.update();
+                currentPose = driveLocalizer.getPose();
+
+                JsonObject json = new JsonObject();
+                json.addProperty("x", currentPose.position.x);
+                json.addProperty("y", currentPose.position.y);
+                json.addProperty("heading", currentPose.heading.toDouble());
+
+                Gson gson = new Gson();
+
+                File file = AppUtil.getInstance().getSettingsFile("robotPosition.json");
+                try (FileWriter writer = new FileWriter(file)) {
+                    gson.toJson(json, writer);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 requestOpModeStop();
             }
             catch(Exception e){

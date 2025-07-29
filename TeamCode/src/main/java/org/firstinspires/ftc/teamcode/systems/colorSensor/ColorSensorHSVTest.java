@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.systems.colorSensor;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +12,7 @@ import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Disabled
 @TeleOp(name = "Color Sensor HSV Test", group = "Test")
 public class ColorSensorHSVTest extends LinearOpMode {
 

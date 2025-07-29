@@ -30,7 +30,7 @@ import com.google.gson.JsonParser;
 import java.io.File;
 
 @TeleOp(name = "DriveBase-typesOfDriving", group = "Dev-Teleops")
-public class TypesOfDrivingTeleOp extends LinearOpMode {
+public class DriveBaseTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {

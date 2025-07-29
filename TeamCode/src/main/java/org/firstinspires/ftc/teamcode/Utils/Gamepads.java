@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-public class Gamepads {
+public final class Gamepads {
 
     public static void rightBumperRumble(Gamepad gamepad) {
         Gamepad.RumbleEffect effect = new Gamepad.RumbleEffect.Builder()
