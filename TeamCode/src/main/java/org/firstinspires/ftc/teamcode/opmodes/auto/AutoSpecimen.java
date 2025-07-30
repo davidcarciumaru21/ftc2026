@@ -82,13 +82,6 @@ public class AutoSpecimen extends LinearOpMode {
         while(opModeIsActive()) {
             try {
 
-                Action test = Movement.straight(10, driveLocalizer);
-                Actions.runBlocking(test);
-
-                drive.leftFront.setPower(0.0);
-                drive.leftBack.setPower(0.0);
-                drive.rightFront.setPower(0.0);
-                drive.rightBack.setPower(0.0);
                 /*
                 Action stafeToSubmersible1 = Movement.strafe(74, 35, driveLocalizer);
 
@@ -220,8 +213,8 @@ public class AutoSpecimen extends LinearOpMode {
                 currentPose = driveLocalizer.getPose();
 
                 JsonObject json = new JsonObject();
-                json.addProperty("x", currentPose.position.x);
-                json.addProperty("y", currentPose.position.y);
+                json.addProperty("x", MeasurementUnits.cmToInches(-160));
+                json.addProperty("y", MeasurementUnits.cmToInches(-120));
                 json.addProperty("heading", currentPose.heading.toDouble());
 
                 Gson gson = new Gson();

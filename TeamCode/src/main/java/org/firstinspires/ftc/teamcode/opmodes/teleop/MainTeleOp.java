@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 //==============================Robot Core=============================
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,7 +17,6 @@ import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
 
 //=============================Robot Systems===========================
 import org.firstinspires.ftc.teamcode.config.ColorConfig;
@@ -110,7 +110,7 @@ public class MainTeleOp extends LinearOpMode {
         //==================ROAD RUNNER INITIALIZATION=================
         //=============================================================
 
-        //===================Setting the robot pose====================
+        //====================Setting the position=====================
         Pose2d startPose;
         Pose2d currentPose;
 
@@ -131,11 +131,10 @@ public class MainTeleOp extends LinearOpMode {
 
         //=============Drive and localizer initialization==============
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        ThreeDeadWheelLocalizer driveLocalizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick, startPose);
 
-        MecanumDrive.PARAMS.maxWheelVel = 100;
-        MecanumDrive.PARAMS.maxProfileAccel = 100;
-        MecanumDrive.PARAMS.minProfileAccel = -20;
+        MecanumDrive.PARAMS.maxWheelVel = 200;
+        MecanumDrive.PARAMS.maxProfileAccel = 50;
+        MecanumDrive.PARAMS.minProfileAccel = -50;
         MecanumDrive speedDrive = new MecanumDrive(hardwareMap, startPose);
 
         //=====================IMU initialization======================
@@ -165,6 +164,19 @@ public class MainTeleOp extends LinearOpMode {
         Positions.ArmPosition basket3 = Positions.getBasket3();
         Positions.ArmPosition perimeterUp = Positions.getPerimeterUP();
 
+        //=======================Drive positions========================
+        Pose2d blueSubmersiblePose = PresetsPositions.getBlueSubmersiblePose();
+        Pose2d forwardBlueSubmersiblePose = PresetsPositions.getForwardBlueSubmersiblePose();
+
+        Pose2d redSubmersiblePose = PresetsPositions.getRedSubmersiblePose();
+        Pose2d forwardRedSubmersiblePose = PresetsPositions.getForwardRedSubmersiblePose();
+
+        Pose2d blueBasePose = PresetsPositions.getBlueBasePose();
+        Pose2d redBasePose = PresetsPositions.getRedBasePose();
+
+        Pose2d blueScoringSubmersiblePose = PresetsPositions.getBlueScoringSubmersiblePose();
+        Pose2d redScoringSubmersiblePose = PresetsPositions.getRedScoringSubmersiblePose();
+
         //===========================Actions============================
         ArmAction armAction = new ArmAction(arm);
         Action basket = armAction.ArmGoto(basketPos.x, basketPos.y, basketPos.elbowUp); // Move arm to scoring position
@@ -175,6 +187,22 @@ public class MainTeleOp extends LinearOpMode {
 
         // Main control loop
         while(opModeIsActive()) {
+
+            //=============================================================
+            //=======================BUTTON STATES=========================
+            //=============================================================
+
+            //===================Gamepad1 button states====================
+            currentShareStateGamepad1 = gamepad1.share;
+            currentTriangleStateGamepad1 = gamepad1.triangle;
+            currentCircleStateGamepad1 = gamepad1.circle;
+
+            //===================Gamepad2 button states====================
+            currentShareStateGamepad2 = gamepad2.share;
+            currentTriangleStateGamepad2 = gamepad2.triangle;
+            currentCircleStateGamepad2 = gamepad2.circle;
+            currentCrossStateGamepad2 = gamepad2.cross;
+            currentSquareStateGamepad2 = gamepad2.square;
 
             //=============================================================
             //=======================DRIVE MOVEMENT========================
@@ -215,10 +243,6 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             //==================Gamepads drive types selection==================
-            currentShareStateGamepad1 = gamepad1.share;
-            currentShareStateGamepad2 = gamepad2.share;
-            currentTriangleStateGamepad1 = gamepad1.triangle;
-            currentCircleStateGamepad1 = gamepad1.circle;
 
             if (currentShareStateGamepad1 && !lastShareGamepad1) {
                 if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
@@ -355,48 +379,7 @@ public class MainTeleOp extends LinearOpMode {
             //=====================ROAD RUNNER PRESETS=====================
             //=============================================================
 
-            //====Preset for getting to the basket from the submersible====
-            if (currentTriangleStateGamepad1 && !lastTriangleStateGamepad1) {
-
-                // The path from generatedthe current position to the basket is depending on the color of the alliance
-                if (ColorConfig.alliance == AllianceColor.BLUE) {
-
-                    drive.stopDrive();
-
-                    // Going to the basket
-                    driveLocalizer.update();
-                    currentPose = driveLocalizer.getPose();
-                    Action splineToBasket = speedDrive.actionBuilder(currentPose)
-                            .splineToLinearHeading(PresetsPositions.blueBasketPosition, -45)
-                            .build();
-                    drive.stopDrive();
-
-                    Actions.runBlocking(splineToBasket);
-                    drive.stopDrive();
-                }
-
-                else if (ColorConfig.alliance == AllianceColor.RED) {
-
-                    drive.stopDrive();
-
-                    // Going to the basket
-                    driveLocalizer.update();
-                    currentPose = driveLocalizer.getPose();
-                    Action splineToBasket = speedDrive.actionBuilder(currentPose)
-                            .splineToLinearHeading(PresetsPositions.blueBasketPosition, -45)
-                            .build();
-                    drive.stopDrive();
-                    
-                    Actions.runBlocking(splineToBasket);
-                    drive.stopDrive();
-                }
-            }
-
-            lastTriangleStateGamepad1 = currentTriangleStateGamepad1;
-
-            //=============================================================
-            //=======================SCORING PRESTES=======================
-            //=============================================================
+            //=====================Presets for gamepad1====================
 
             if (currentCircleStateGamepad1 && !lastCircleStateGamepad1) {
                 Actions.runBlocking(new SequentialAction(
@@ -407,14 +390,207 @@ public class MainTeleOp extends LinearOpMode {
                 ));
             }
 
+            //=====================Presets for gamepad2====================
+
+            //===================From base to submersible==================
+            if (currentTriangleStateGamepad2 && !lastTriangleStateGamepad2) {
+
+                Action strafeToSubmersible;
+                Action forwardToSubmersible;
+                if (ColorConfig.alliance == AllianceColor.BLUE) {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeToSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            blueSubmersiblePose.position.x,
+                                            blueSubmersiblePose.position.y),
+                                    blueSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeToSubmersible);
+
+                    speedDrive.stopDrive();
+                } else {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeToSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            redSubmersiblePose.position.x,
+                                            redSubmersiblePose.position.y),
+                                    redSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeToSubmersible);
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    forwardToSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                                forwardRedSubmersiblePose.position.x,
+                                                forwardRedSubmersiblePose.position.y),
+                                    forwardRedSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(forwardToSubmersible);
+
+                    speedDrive.stopDrive();
+                }
+            }
+
+            //===================From submersible to base==================
+            if (currentCircleStateGamepad2 && !lastCircleStateGamepad2) {
+
+                Action backFromSubmersible;
+                Action strafeToBase;
+                if (ColorConfig.alliance == AllianceColor.BLUE) {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    backFromSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            blueSubmersiblePose.position.x,
+                                            blueSubmersiblePose.position.y),
+                                    blueSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(backFromSubmersible);
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeToBase = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            blueBasePose.position.x,
+                                            blueBasePose.position.y),
+                                    blueBasePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeToBase);
+
+                    speedDrive.stopDrive();
+                } else {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    backFromSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                                redSubmersiblePose.position.x,
+                                                redSubmersiblePose.position.y),
+                                    redSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(backFromSubmersible);
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeToBase = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            redBasePose.position.x,
+                                            redBasePose.position.y),
+                                    redBasePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeToBase);
+
+                    speedDrive.stopDrive();
+                }
+            }
+
+            //===============From base to submersible scoring==============
+            if (currentCrossStateGamepad2 && !lastCrossStateGamepad2) {
+
+                Action strafeFromBaseToScoringSubmersible;
+                if (ColorConfig.alliance == AllianceColor.BLUE) {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeFromBaseToScoringSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            blueScoringSubmersiblePose.position.x,
+                                            blueScoringSubmersiblePose.position.y),
+                                    blueScoringSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeFromBaseToScoringSubmersible);
+
+                    speedDrive.stopDrive();
+                } else {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeFromBaseToScoringSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            redScoringSubmersiblePose.position.x,
+                                            redScoringSubmersiblePose.position.y),
+                                    redScoringSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeFromBaseToScoringSubmersible);
+
+                    speedDrive.stopDrive();
+                }
+            }
+
+            //===============From submersible scoring to base==============
+            if (currentSquareStateGamepad2 && !lastSquareStateGamepad2) {
+
+                Action strafeFromScoringSubmersibleToBase;
+                if (ColorConfig.alliance == AllianceColor.BLUE) {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeFromScoringSubmersibleToBase = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            blueBasePose.position.x,
+                                            blueBasePose.position.y),
+                                    blueBasePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeFromScoringSubmersibleToBase);
+
+                    speedDrive.stopDrive();
+                } else {
+
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    strafeFromScoringSubmersibleToBase = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            redBasePose.position.x,
+                                            redBasePose.position.y),
+                                    redBasePose.heading.toDouble())
+                            .build();
+
+                    Actions.runBlocking(strafeFromScoringSubmersibleToBase);
+
+                    speedDrive.stopDrive();
+                }
+            }
+
+            lastTriangleStateGamepad2 = currentTriangleStateGamepad2;
+            lastCircleStateGamepad2 = currentCircleStateGamepad2;
+            lastCrossStateGamepad2 = currentCrossStateGamepad2;
+            lastSquareStateGamepad2 = currentSquareStateGamepad2;
+
             lastCircleStateGamepad1 = currentCircleStateGamepad1;
 
             //=============================================================
             //==========================TELEMETRY==========================
             //=============================================================
 
-            driveLocalizer.update();
-            currentPose = driveLocalizer.getPose();
+            drive.localizer.update();
+            currentPose = drive.localizer.getPose();
 
             TelemetryMethods.displayMotorPowers(telemetry, leftFrontPower, leftBackPower, rightFrontPower, rightBackPower);
             TelemetryMethods.displayPostion(telemetry, currentPose);
