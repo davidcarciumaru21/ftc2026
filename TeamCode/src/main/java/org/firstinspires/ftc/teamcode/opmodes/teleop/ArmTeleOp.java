@@ -6,14 +6,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 //=============================Robot Systems===========================
-import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
-import org.firstinspires.ftc.teamcode.config.ColorConfig;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 
 //=================================Utils===============================
 import org.firstinspires.ftc.teamcode.Utils.Gamepads;
+import org.firstinspires.ftc.teamcode.Utils.TelemetryMethods;
+
+//=============================Configurations==========================
+import org.firstinspires.ftc.teamcode.config.ColorConfig;
 
 @TeleOp(name = "TeleopArm", group = "Dev-Teleops")
 public class ArmTeleOp extends LinearOpMode {

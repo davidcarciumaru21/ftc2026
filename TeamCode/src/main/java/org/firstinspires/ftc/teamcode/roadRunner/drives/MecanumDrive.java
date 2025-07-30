@@ -503,4 +503,12 @@ public final class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
+
+    public void stopDrive() {
+        DcMotorEx[] motors = {leftFront, leftBack, rightFront, rightBack};
+        for (DcMotor motor : motors) {
+            motor.setPower(0);
+        }
+    }
+
 }

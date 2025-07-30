@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 //==============================Robot Core=============================
-import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,14 +10,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 //==============================Road Runner============================
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
-import com.acmerobotics.roadrunner.VelConstraint;
-import com.acmerobotics.roadrunner.AccelConstraint;
 
 //=============================Robot Systems===========================
 import org.firstinspires.ftc.teamcode.config.ColorConfig;
@@ -28,6 +24,7 @@ import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
+import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 
 //=================================Utils===============================
 import org.firstinspires.ftc.teamcode.Utils.Gamepads;
@@ -38,7 +35,6 @@ import org.firstinspires.ftc.teamcode.Utils.WaitAction;
 import org.firstinspires.ftc.teamcode.config.enums.DriveType;
 import org.firstinspires.ftc.teamcode.config.PresetsPositions;
 import org.firstinspires.ftc.teamcode.config.GamepadsCoefficients;
-import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 
 //=============================File reading============================
 import java.io.FileReader;
@@ -47,7 +43,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.File;
 
-@TeleOp(name = "MainTeleOp", group = "Use")
+@TeleOp(name = "MainTeleOp", group = "A(Match usage)")
 public class MainTeleOp extends LinearOpMode {
 
     @Override
@@ -57,14 +53,40 @@ public class MainTeleOp extends LinearOpMode {
         //===================VARIABLE INITIALIZATION===================
         //=============================================================
 
-        //=====================Share button states=====================
+        //===================Gamepad1 button states====================
         boolean currentShareStateGamepad1;
         boolean lastShareGamepad1 = false;
-        boolean currentShareStateGamepad2;
-        boolean lastShareGamepad2 = false;
 
         boolean currentTriangleStateGamepad1;
         boolean lastTriangleStateGamepad1 = false;
+
+        boolean currentCircleStateGamepad1;
+        boolean lastCircleStateGamepad1 = false;
+
+        boolean currentCrossStateGamepad1;
+        boolean lastCrossStateGamepad1 = false;
+
+        boolean currentSquareStateGamepad1;
+        boolean lastSquareStateGamepad1 = false;
+
+        //===================Gamepad2 button states====================
+        boolean currentShareStateGamepad2;
+        boolean lastShareGamepad2 = false;
+
+        boolean currentTriangleStateGamepad2;
+        boolean lastTriangleStateGamepad2 = false;
+
+        boolean currentCircleStateGamepad2;
+        boolean lastCircleStateGamepad2 = false;
+
+        boolean currentCrossStateGamepad2;
+        boolean lastCrossStateGamepad2 = false;
+
+        boolean currentSquareStateGamepad2;
+        boolean lastSquareStateGamepad2 = false;
+
+        boolean currentPsStateGamepad2;
+        boolean lastPsStateGamepad2 = false;
 
         //=========================Drive types=========================
         DriveType driveModeGamepad1 = DriveType.ROBOTCENTRIC;
@@ -113,7 +135,7 @@ public class MainTeleOp extends LinearOpMode {
 
         MecanumDrive.PARAMS.maxWheelVel = 100;
         MecanumDrive.PARAMS.maxProfileAccel = 100;
-        MecanumDrive.PARAMS.minProfileAccel = -10+0;
+        MecanumDrive.PARAMS.minProfileAccel = -20;
         MecanumDrive speedDrive = new MecanumDrive(hardwareMap, startPose);
 
         //=====================IMU initialization======================
@@ -196,6 +218,7 @@ public class MainTeleOp extends LinearOpMode {
             currentShareStateGamepad1 = gamepad1.share;
             currentShareStateGamepad2 = gamepad2.share;
             currentTriangleStateGamepad1 = gamepad1.triangle;
+            currentCircleStateGamepad1 = gamepad1.circle;
 
             if (currentShareStateGamepad1 && !lastShareGamepad1) {
                 if (driveModeGamepad1 == DriveType.ROBOTCENTRIC) {
@@ -338,10 +361,7 @@ public class MainTeleOp extends LinearOpMode {
                 // The path from generatedthe current position to the basket is depending on the color of the alliance
                 if (ColorConfig.alliance == AllianceColor.BLUE) {
 
-                    drive.leftFront.setPower(0.0);
-                    drive.leftBack.setPower(0.0);
-                    drive.rightFront.setPower(0.0);
-                    drive.rightBack.setPower(0.0);
+                    drive.stopDrive();
 
                     // Going to the basket
                     driveLocalizer.update();
@@ -349,17 +369,15 @@ public class MainTeleOp extends LinearOpMode {
                     Action splineToBasket = speedDrive.actionBuilder(currentPose)
                             .splineToLinearHeading(PresetsPositions.blueBasketPosition, -45)
                             .build();
+                    drive.stopDrive();
 
                     Actions.runBlocking(splineToBasket);
-
+                    drive.stopDrive();
                 }
 
                 else if (ColorConfig.alliance == AllianceColor.RED) {
 
-                    drive.leftFront.setPower(0.0);
-                    drive.leftBack.setPower(0.0);
-                    drive.rightFront.setPower(0.0);
-                    drive.rightBack.setPower(0.0);
+                    drive.stopDrive();
 
                     // Going to the basket
                     driveLocalizer.update();
@@ -367,12 +385,29 @@ public class MainTeleOp extends LinearOpMode {
                     Action splineToBasket = speedDrive.actionBuilder(currentPose)
                             .splineToLinearHeading(PresetsPositions.blueBasketPosition, -45)
                             .build();
-
+                    drive.stopDrive();
+                    
                     Actions.runBlocking(splineToBasket);
+                    drive.stopDrive();
                 }
             }
 
             lastTriangleStateGamepad1 = currentTriangleStateGamepad1;
+
+            //=============================================================
+            //=======================SCORING PRESTES=======================
+            //=============================================================
+
+            if (currentCircleStateGamepad1 && !lastCircleStateGamepad1) {
+                Actions.runBlocking(new SequentialAction(
+                        basket,
+                        servoOut,
+                        new WaitAction(0.3),
+                        servoStop
+                ));
+            }
+
+            lastCircleStateGamepad1 = currentCircleStateGamepad1;
 
             //=============================================================
             //==========================TELEMETRY==========================

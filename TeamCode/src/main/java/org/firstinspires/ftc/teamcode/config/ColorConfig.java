@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.config.enums.AllianceColor;
 public class ColorConfig {
 
     // This will be editable in the FTC Dashboard as a dropdown
-    public static AllianceColor alliance = AllianceColor.RED;
+    public static AllianceColor alliance = AllianceColor.BLUE;
 
     public static int redHsvValue1 = 10;
     public static int redHsvValue2 = 30;
