@@ -132,9 +132,11 @@ public class MainTeleOp extends LinearOpMode {
         //=============Drive and localizer initialization==============
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
-        MecanumDrive.PARAMS.maxWheelVel = 200;
-        MecanumDrive.PARAMS.maxProfileAccel = 50;
-        MecanumDrive.PARAMS.minProfileAccel = -50;
+        MecanumDrive.PARAMS.maxWheelVel = 500;
+        MecanumDrive.PARAMS.maxProfileAccel = 250;
+        MecanumDrive.PARAMS.minProfileAccel = -250;
+        MecanumDrive.PARAMS.maxAngVel = 500;
+        MecanumDrive.PARAMS.maxAngAccel = 250;
         MecanumDrive speedDrive = new MecanumDrive(hardwareMap, startPose);
 
         //=====================IMU initialization======================
@@ -399,6 +401,7 @@ public class MainTeleOp extends LinearOpMode {
                 Action forwardToSubmersible;
                 if (ColorConfig.alliance == AllianceColor.BLUE) {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -409,11 +412,26 @@ public class MainTeleOp extends LinearOpMode {
                                     blueSubmersiblePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeToSubmersible);
 
                     speedDrive.stopDrive();
+                    speedDrive.localizer.update();
+                    currentPose = speedDrive.localizer.getPose();
+                    speedDrive.localizer.setPose(currentPose);
+                    forwardToSubmersible = speedDrive.actionBuilder(currentPose)
+                            .strafeToLinearHeading(new Vector2d(
+                                            forwardBlueSubmersiblePose.position.x,
+                                            forwardBlueSubmersiblePose.position.y),
+                                    forwardBlueSubmersiblePose.heading.toDouble())
+                            .build();
+
+                    speedDrive.stopDrive();
+                    Actions.runBlocking(forwardToSubmersible);
+                    speedDrive.stopDrive();
                 } else {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -424,8 +442,10 @@ public class MainTeleOp extends LinearOpMode {
                                     redSubmersiblePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeToSubmersible);
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -436,9 +456,10 @@ public class MainTeleOp extends LinearOpMode {
                                     forwardRedSubmersiblePose.heading.toDouble())
                             .build();
 
-                    Actions.runBlocking(forwardToSubmersible);
-
                     speedDrive.stopDrive();
+                    Actions.runBlocking(forwardToSubmersible);
+                    speedDrive.stopDrive();
+
                 }
             }
 
@@ -449,6 +470,7 @@ public class MainTeleOp extends LinearOpMode {
                 Action strafeToBase;
                 if (ColorConfig.alliance == AllianceColor.BLUE) {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -459,8 +481,10 @@ public class MainTeleOp extends LinearOpMode {
                                     blueSubmersiblePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(backFromSubmersible);
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -471,11 +495,12 @@ public class MainTeleOp extends LinearOpMode {
                                     blueBasePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeToBase);
-
                     speedDrive.stopDrive();
                 } else {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -486,8 +511,10 @@ public class MainTeleOp extends LinearOpMode {
                                     redSubmersiblePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(backFromSubmersible);
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -498,8 +525,8 @@ public class MainTeleOp extends LinearOpMode {
                                     redBasePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeToBase);
-
                     speedDrive.stopDrive();
                 }
             }
@@ -510,6 +537,7 @@ public class MainTeleOp extends LinearOpMode {
                 Action strafeFromBaseToScoringSubmersible;
                 if (ColorConfig.alliance == AllianceColor.BLUE) {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -520,11 +548,12 @@ public class MainTeleOp extends LinearOpMode {
                                     blueScoringSubmersiblePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeFromBaseToScoringSubmersible);
-
                     speedDrive.stopDrive();
                 } else {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -535,8 +564,8 @@ public class MainTeleOp extends LinearOpMode {
                                     redScoringSubmersiblePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeFromBaseToScoringSubmersible);
-
                     speedDrive.stopDrive();
                 }
             }
@@ -547,6 +576,7 @@ public class MainTeleOp extends LinearOpMode {
                 Action strafeFromScoringSubmersibleToBase;
                 if (ColorConfig.alliance == AllianceColor.BLUE) {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -557,11 +587,12 @@ public class MainTeleOp extends LinearOpMode {
                                     blueBasePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeFromScoringSubmersibleToBase);
-
                     speedDrive.stopDrive();
                 } else {
 
+                    speedDrive.stopDrive();
                     speedDrive.localizer.update();
                     currentPose = speedDrive.localizer.getPose();
                     speedDrive.localizer.setPose(currentPose);
@@ -572,8 +603,8 @@ public class MainTeleOp extends LinearOpMode {
                                     redBasePose.heading.toDouble())
                             .build();
 
+                    speedDrive.stopDrive();
                     Actions.runBlocking(strafeFromScoringSubmersibleToBase);
-
                     speedDrive.stopDrive();
                 }
             }

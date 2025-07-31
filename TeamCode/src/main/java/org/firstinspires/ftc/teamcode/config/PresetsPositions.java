@@ -33,11 +33,11 @@ public class PresetsPositions {
     public static double redBaseY = 120;
     public static double redBaseHeadingDeg = 0;
 
-    public static double blueScoreSubX = -120;
-    public static double blueScoreSubY = 0;
+    public static double blueScoreSubX = -100;
+    public static double blueScoreSubY = -20;
     public static double blueScoreSubHeadingDeg = 0;
 
-    public static double redScoreSubX = -120;
+    public static double redScoreSubX = -100;
     public static double redScoreSubY = 0;
     public static double redScoreSubHeadingDeg = 0;
 
