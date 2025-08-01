@@ -1,34 +1,38 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-// FTC and Road Runner imports
-
+//==============================Road Runner============================
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
+
+//==============================Robot Core=============================
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-// Hardware/system imports
-import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
+//=============================Robot Systems===========================
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
 import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorAction;
-import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
+//=================================Utils===============================
+import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
+
+//=============================File writing============================
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @Autonomous(name = "Auto Basket", group = "Auto")
 public class AutoBasket extends LinearOpMode {

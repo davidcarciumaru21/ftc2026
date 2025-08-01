@@ -1,30 +1,39 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+//==============================Road Runner============================
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
+
+//==============================Robot Core=============================
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+//=============================Robot Systems===========================
 import org.firstinspires.ftc.teamcode.systems.arm.ArmAction;
 import org.firstinspires.ftc.teamcode.systems.arm.JacobianArm;
 import org.firstinspires.ftc.teamcode.systems.arm.Positions;
 import org.firstinspires.ftc.teamcode.systems.servo.ServoAction;
-import org.firstinspires.ftc.teamcode.roadRunner.drives.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadRunner.localizer.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.SampleDetection;
+import org.firstinspires.ftc.teamcode.systems.colorSensor.ColorAction;
+
+//=================================Utils===============================
 import org.firstinspires.ftc.teamcode.Utils.MeasurementUnits;
 
+//=============================File writing============================
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 
 @Autonomous(group = "Auto", name = "Auto Specimen")
 public class AutoSpecimen extends LinearOpMode {
