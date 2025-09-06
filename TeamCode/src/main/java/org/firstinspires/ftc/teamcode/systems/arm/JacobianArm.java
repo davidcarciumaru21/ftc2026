@@ -33,7 +33,8 @@ public final class JacobianArm {
         this.dof2 = (DcMotorEx) obj2;
         this.L1 = 43.0d;
         this.L2 = 50.0d;
-        this.TICKS_PER_DEGREE = 19.793055555555554d;
+        double ticksPerRev = 3007.34;
+        this.TICKS_PER_DEGREE = ticksPerRev / 360.0;
         this.dof1_offset = ArmConfig.offset1;
         this.dof2_offset = ArmConfig.offset2;
         this.dof2.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -65,7 +66,7 @@ public final class JacobianArm {
         double theta1 = Math.atan2(y, x) - Math.atan2(k2, k1);
         double theta2_absolute = theta1 + theta2_relative;
         double theta1_deg = Math.toDegrees(theta1);
-        double theta2_deg = Math.toDegrees(theta2_absolute);
+        double theta2_deg = 180 + Math.toDegrees(theta2_absolute);
         int target1Ticks = (int) (this.TICKS_PER_DEGREE * theta1_deg);
         int target2Ticks = (int) (this.TICKS_PER_DEGREE * theta2_deg);
         this.dof1.setTargetPosition(this.dof1_offset + target1Ticks);
